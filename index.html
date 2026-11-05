@@ -219,11 +219,12 @@
     line-height: 1.4;
   }
 
+  /* Оптимизированный контейнер для картинок */
   .meme-container {
     width: 100%;
     max-width: 650px;
-    height: 200px;
-    background: #151515;
+    height: 220px;
+    background: #000;
     border: 2px solid #333;
     border-radius: 8px;
     margin-bottom: 20px;
@@ -236,9 +237,8 @@
   .meme-container img {
     width: 100%;
     height: 100%;
-    object-fit: contain; /* Изменено на contain, чтобы мемы не обрезались */
+    object-fit: contain; /* Картинка вписывается в рамку, не искажаясь */
     display: block;
-    background: #000;
   }
   .meme-placeholder {
     color: var(--muted);
@@ -288,48 +288,45 @@
   .answer-btn.correct { border-color: var(--neon); color: var(--neon); background: rgba(57,255,20,0.1); }
   .answer-btn.wrong { border-color: var(--danger); color: var(--danger); background: rgba(255,0,51,0.1); }
 
-  /* Экран 4 */
-  #screen-minigame { background: #050505; }
-  .timer-bar-container {
+  /* Экран результатов (Грамота / Провал) */
+  #screen-result { justify-content: center; }
+  
+  .certificate {
+    border: 4px double var(--orange);
+    background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
+    padding: 32px 24px;
+    max-width: 550px;
     width: 100%;
-    max-width: 300px;
-    height: 12px;
-    background: #333;
-    border-radius: 6px;
-    margin: 30px 0;
-    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(255, 102, 0, 0.2);
+    position: relative;
   }
-  .timer-bar {
-    height: 100%;
+  .certificate::before {
+    content: "🏆";
+    font-size: 3rem;
+    position: absolute;
+    top: -24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg);
+    padding: 0 10px;
+  }
+  .certificate h2 { color: var(--orange); font-size: 1.8rem; margin-top: 16px; margin-bottom: 8px; }
+  .certificate .subtitle { font-size: 1rem; color: var(--neon); margin-bottom: 24px; text-transform: uppercase; letter-spacing: 2px; }
+  .certificate p { font-size: 1.1rem; line-height: 1.6; color: var(--text); margin-bottom: 16px; text-align: left; }
+  .certificate .signature { margin-top: 32px; text-align: right; font-style: italic; color: var(--orange); }
+  
+  .fail-box {
+    border: 2px dashed var(--danger);
+    background: rgba(255, 0, 51, 0.05);
+    padding: 32px 24px;
+    max-width: 550px;
     width: 100%;
-    background: var(--danger);
-    transition: width 0.1s linear;
+    border-radius: 8px;
   }
-  .mega-btn {
-    width: 240px;
-    height: 240px;
-    border-radius: 50%;
-    background: var(--danger);
-    border: 6px solid #fff;
-    color: #fff;
-    font-family: var(--font-head);
-    font-size: 1.8rem;
-    text-transform: uppercase;
-    box-shadow: 0 0 40px var(--danger);
-    animation: pulse 1s infinite;
-    cursor: pointer;
-    display: grid;
-    place-items: center;
-    text-align: center;
-    padding: 20px;
-    margin: 24px auto;
-  }
-  .mega-btn:active { transform: scale(0.9); animation: none; }
-  @keyframes pulse {
-    0% { transform: scale(1); box-shadow: 0 0 40px var(--danger); }
-    50% { transform: scale(1.05); box-shadow: 0 0 80px var(--danger); }
-    100% { transform: scale(1); box-shadow: 0 0 40px var(--danger); }
-  }
+  .fail-box h2 { color: var(--danger); font-size: 2rem; margin-bottom: 16px; text-shadow: 0 0 20px rgba(255,0,51,0.5); }
+  .fail-box p { font-size: 1.2rem; line-height: 1.6; color: #ddd; margin-bottom: 16px; }
+  .fail-box .highlight { color: var(--danger); font-weight: bold; text-transform: uppercase; }
 
   /* Модалка */
   .modal-overlay {
@@ -362,20 +359,6 @@
   .modal-content h3 { color: var(--danger); font-size: 1.8rem; margin-bottom: 16px; text-shadow: 0 0 15px var(--danger); }
   .modal-content p { color: var(--text); font-size: 1.1rem; line-height: 1.5; }
 
-  /* Финальный экран */
-  #screen-result { justify-content: center; }
-  .achievement-box {
-    border: 2px dashed var(--neon);
-    padding: 32px 24px;
-    background: rgba(57,255,20,0.05);
-    margin-top: 24px;
-    max-width: 550px;
-    width: 100%;
-    border-radius: 8px;
-  }
-  .achievement-box h2 { color: var(--neon); text-shadow: 0 0 15px var(--neon); margin-bottom: 16px; font-size: 1.8rem; }
-  .achievement-box p { color: var(--text); margin-bottom: 0; font-size: 1.1rem; line-height: 1.5; }
-  
   .credits {
     position: absolute;
     bottom: 10px;
@@ -462,25 +445,28 @@
     <div class="answers" id="quiz-answers"></div>
   </div>
 
-  <!-- ЭКРАН 4: МИНИ-ИГРА -->
-  <div id="screen-minigame" class="screen">
-    <h2>ВОДИТЕЛЬ СНИМАЕТ ВИДЕО!</h2>
-    <p style="font-size: 1.1rem;">Ты попал в кадр к злому водителю. Он орет: "Убери телефон!". Жми на кнопку, чтобы спастись!</p>
-    
-    <div class="timer-bar-container">
-      <div class="timer-bar" id="timer-bar"></div>
-    </div>
-
-    <button class="mega-btn" id="mega-btn" onclick="handleMegaClick()">УБЕРИ<br>ТЕЛЕФОН</button>
-  </div>
-
-  <!-- ЭКРАН 5: РЕЗУЛЬТАТ -->
+  <!-- ЭКРАН 5: РЕЗУЛЬТАТ (Грамота или Провал) -->
   <div id="screen-result" class="screen">
-    <h1 id="result-title">ЗАГРУЗКА...</h1>
-    <div class="achievement-box" id="result-box">
-      <h2 id="result-achievement">...</h2>
-      <p id="result-desc">...</p>
+    <!-- Блок для успешного прохождения -->
+    <div class="certificate" id="certificate-box" style="display: none;">
+      <h2>ТОРЖЕСТВЕННАЯ ГРАМОТА</h2>
+      <div class="subtitle">Официальное усыновление / удочерение</div>
+      <p>Настоящим документом подтверждается, что гражданин(ка) <strong id="cert-name">...</strong> успешно прошел(ла) все испытания дорогой, сдал(а) экзамен на знание таможенных конвенций и тахографа, и признан(а) достойным(ой) членом семьи.</p>
+      <p>С этого дня вы официально становитесь <strong id="cert-role">СЫНОМ</strong> Папы Димы. Таможня вас уважает, дальнобойщики жмут руку, а тахограф поет вам колыбельные.</p>
+      <div class="signature">
+        С уважением,<br>
+        <strong>ПАПА ДИМА</strong>
+      </div>
     </div>
+
+    <!-- Блок для провала -->
+    <div class="fail-box" id="fail-box" style="display: none;">
+      <h2>ПРОВАЛ</h2>
+      <p>Вы набрали <strong id="fail-score">0</strong> баллов из 10 возможных.</p>
+      <p class="highlight">Вы показали самый худший результат в группе.</p>
+      <p>Тот, кто прошел этот тест, но не стал Сыном Папы Димы — <strong>недостоин ничего</strong>. Таможня вас завернула, тахограф плачет. Вас ждет пересдача и позор.</p>
+    </div>
+
     <button class="btn" style="margin-top: 32px;" onclick="location.reload()">[ ПРОЙТИ ЗАНОВО ]</button>
   </div>
 
@@ -549,7 +535,7 @@
     "ГОЛОВАСТИК В КУЗОВЕ",
     "СТАЖЁР НА ТАМОЖНЕ",
     "ДАЛЬНОБОЙ-СЕРЕДНЯК",
-    "СЫН ПАПЫ ДИМЫ" // 4-й этап
+    "СЫН ПАПЫ ДИМЫ" // Заменится на ДОЧЬ, если выбран девочка
   ];
 
   if (window.Telegram && window.Telegram.WebApp) window.Telegram.WebApp.ready();
@@ -681,8 +667,6 @@
     if (state.statusStage > 4) state.statusStage = 4;
     
     let currentStatus = statusNames[state.statusStage];
-    
-    // Если выбрали девочку, меняем финальный статус
     if (state.gender === 'girl' && state.statusStage === 4) {
        currentStatus = "ДОЧЬ ПАПЫ ДИМЫ";
     }
@@ -703,7 +687,6 @@
     document.getElementById('quiz-progress').innerText = `ВОПРОС ${state.quizIndex + 1}/${quizData.length}`;
     updateStatusUI();
     
-    // Работа с картинкой
     const img = document.getElementById('meme-img');
     const placeholder = document.getElementById('meme-placeholder');
     
@@ -711,7 +694,6 @@
     img.style.display = 'block';
     placeholder.style.display = 'none';
     
-    // Если картинка не загрузилась (нет файла), показываем заглушку
     img.onerror = () => {
       img.style.display = 'none';
       placeholder.style.display = 'block';
@@ -756,65 +738,15 @@
     allBtns.forEach(b => b.style.pointerEvents = 'none');
     updateStatusUI();
 
+    // Очень быстрый переход (300мс), чтобы не тормозило
     setTimeout(() => {
       state.quizIndex++;
       if (state.quizIndex < quizData.length) {
         renderQuiz();
       } else {
-        startMinigame();
+        showResult(); // Сразу переходим к финалу, без мини-игры
       }
-    }, 1500);
-  }
-
-  // --- ЭКРАН 4: МИНИ-ИГРА ---
-  let minigameTimeout;
-
-  function startMinigame() {
-    goToScreen('screen-minigame');
-    
-    const bar = document.getElementById('timer-bar');
-    const megaBtn = document.getElementById('mega-btn');
-    
-    bar.style.transition = 'none';
-    bar.style.width = '100%';
-    megaBtn.style.display = 'grid';
-    megaBtn.disabled = false;
-
-    setTimeout(() => {
-      bar.style.transition = 'width 2s linear';
-      bar.style.width = '0%';
-    }, 50);
-
-    minigameTimeout = setTimeout(() => {
-      megaBtn.style.display = 'none';
-      state.rep--; // Штраф
-      sfxError();
-      vibrate('error');
-      showModal('ТЫ СТАЛ ЗВЕЗДОЙ ТИКТОКА', 'Водитель выложил видео с тобой. Минус к статусу. Штраф от тахографа.');
-      
-      setTimeout(() => {
-        closeModal();
-        showResult();
-      }, 2500);
-    }, 2000);
-  }
-
-  function handleMegaClick() {
-    clearTimeout(minigameTimeout);
-    document.getElementById('mega-btn').style.display = 'none';
-    document.getElementById('timer-bar').style.transition = 'none';
-    document.getElementById('timer-bar').style.width = '100%';
-    
-    state.rep++; // Бонус
-    sfxSuccess();
-    vibrate('heavy');
-    
-    showModal('СПАСЕН!', 'Ты успел убрать телефон. Водитель тебя не снял. Бонус к статусу!');
-    
-    setTimeout(() => {
-      closeModal();
-      showResult();
-    }, 2000);
+    }, 300);
   }
 
   // --- МОДАЛКА ---
@@ -829,34 +761,32 @@
     document.getElementById('modal').classList.remove('active');
   }
 
-  // --- ЭКРАН 5: РЕЗУЛЬТАТ ---
+  // --- ЭКРАН 5: РЕЗУЛЬТАТ (Грамота или Провал) ---
   function showResult() {
     goToScreen('screen-result');
     
-    const title = document.getElementById('result-title');
-    const achievement = document.getElementById('result-achievement');
-    const desc = document.getElementById('result-desc');
+    const certBox = document.getElementById('certificate-box');
+    const failBox = document.getElementById('fail-box');
     
-    // Максимум: 10 (квіз) + 1 (мінігра) = 11.
-    const isHighRep = state.rep >= 8;
+    // Порог успеха: 7 и больше правильных ответов (из 10)
+    const isWinner = state.rep >= 7;
     
-    if (isHighRep) {
-      title.innerText = "ПОБЕДА";
-      title.style.color = "var(--neon)";
-      title.style.textShadow = "0 0 20px var(--neon)";
+    if (isWinner) {
+      certBox.style.display = 'block';
+      failBox.style.display = 'none';
       
-      const role = state.gender === 'boy' ? 'СЫН' : 'ДОЧЬ';
-      achievement.innerText = `ДОСТИЖЕНИЕ РАЗБЛОКИРОВАНО:\n${role} ПАПЫ ДИМЫ`;
-      desc.innerText = `Ты прошел путь от сперматозоида до гордости семьи. Таможня тебя уважает, тахограф тобой доволен. Забирай стипендию.`;
+      const role = state.gender === 'boy' ? 'СЫНОМ' : 'ДОЧЕРЬЮ';
+      document.getElementById('cert-role').innerText = role;
+      document.getElementById('cert-name').innerText = "Студент ВГЛТУ";
+      
       sfxSuccess();
       vibrate('success');
     } else {
-      title.innerText = "ПРОВАЛ";
-      title.style.color = "var(--danger)";
-      title.style.textShadow = "0 0 20px var(--danger)";
+      certBox.style.display = 'none';
+      failBox.style.display = 'block';
       
-      achievement.innerText = "ДОСТИЖЕНИЕ РАЗБЛОКИРОВАНО:\nСПЕРМАТОЗОИД";
-      desc.innerText = `Ты не прошел испытание. Таможня тебя завернула, а тахограф плачет. Тебя ждет пересдача.`;
+      document.getElementById('fail-score').innerText = state.rep;
+      
       sfxError();
       vibrate('error');
     }
