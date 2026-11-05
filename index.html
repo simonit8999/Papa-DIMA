@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0a0a0a">
-<title>ДАЛЬНОБОЙ: КВЕСТ v6</title>
+<title>ДАЛЬНОБОЙ: КВЕСТ v8</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   :root {
@@ -27,8 +27,10 @@
   }
 
   html, body {
-    height: 100%; width: 100%;
-    overflow: hidden;
+    height: 100%;
+    height: 100dvh; /* Идеально под мобилки */
+    width: 100%;
+    overflow: hidden; /* Запрет скролла всего окна */
     background: var(--bg);
     color: var(--text);
     font-family: var(--font-mono);
@@ -36,16 +38,15 @@
 
   #app {
     position: relative;
-    width: 100vw;
-    height: 100vh;
-    height: 100dvh;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
   }
 
   .screen {
     position: absolute;
     inset: 0;
-    padding: 24px;
+    padding: 15px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -71,26 +72,26 @@
     text-shadow: 0 0 10px var(--neon-dim);
   }
 
-  h1 { font-size: clamp(2rem, 8vw, 3.5rem); color: var(--neon); }
-  h2 { font-size: clamp(1.5rem, 6vw, 2.5rem); color: var(--white); margin-bottom: 16px; }
-  h3 { font-size: 1.5rem; color: var(--orange); margin-bottom: 16px; }
+  h1 { font-size: 22px; color: var(--neon); margin-bottom: 10px; }
+  h2 { font-size: 20px; color: var(--white); margin-bottom: 10px; }
+  h3 { font-size: 16px; color: var(--orange); margin-bottom: 10px; }
 
-  p { font-size: 1.1rem; line-height: 1.6; margin-bottom: 16px; color: #dddddd; }
+  p { font-size: 13px; line-height: 1.4; margin-bottom: 10px; color: #dddddd; }
 
   .btn {
     background: transparent;
     border: 2px solid var(--neon);
     color: var(--neon);
-    padding: 16px 32px;
+    padding: 12px 20px;
     font-family: var(--font-head);
-    font-size: 1.2rem;
+    font-size: 16px;
     text-transform: uppercase;
     cursor: pointer;
     box-shadow: 0 0 10px var(--neon-dim), inset 0 0 10px var(--neon-dim);
     transition: all 0.1s ease;
     width: 100%;
-    max-width: 450px;
-    margin: 8px 0;
+    max-width: 400px;
+    margin: 6px 0;
   }
   .btn:active {
     transform: scale(0.96) translateY(2px);
@@ -110,19 +111,19 @@
   /* Экран 0 */
   #screen-boot {
     justify-content: flex-start;
-    padding-top: 20vh;
+    padding-top: 15vh;
     text-align: left;
     align-items: flex-start;
   }
   .boot-text {
-    font-size: 1.2rem;
+    font-size: 14px;
     color: var(--neon);
     min-height: 1.5em;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
   }
   .boot-text.danger { color: var(--danger); text-shadow: 0 0 10px var(--danger); }
   .boot-btn-wrapper {
-    margin-top: 40px;
+    margin-top: 30px;
     opacity: 0;
     transition: opacity 0.5s;
     width: 100%;
@@ -135,19 +136,19 @@
   .class-buttons {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
     width: 100%;
-    max-width: 450px;
-    margin-top: 24px;
+    max-width: 400px;
+    margin-top: 15px;
   }
 
   /* Экран 2: Карточки */
   .card-container {
     width: 100%;
-    max-width: 600px;
-    height: 340px;
+    max-width: 500px;
+    height: 200px;
     position: relative;
-    margin: 24px 0;
+    margin: 15px 0;
     perspective: 1000px;
   }
   .card {
@@ -156,7 +157,7 @@
     background: #111;
     border: 2px solid var(--orange);
     box-shadow: 0 0 15px var(--orange-dim);
-    padding: 32px 24px;
+    padding: 15px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -171,171 +172,168 @@
     transform: translateX(0);
     pointer-events: auto;
   }
-  .card h3 { font-size: 1.6rem; text-align: center; }
-  .card p { color: var(--text); margin-bottom: 0; font-size: 1.1rem; line-height: 1.6; text-align: center; }
+  .card h3 { font-size: 18px; text-align: center; }
+  .card p { color: var(--text); margin-bottom: 0; font-size: 13px; line-height: 1.4; text-align: center; }
   
   .nav-controls {
     display: flex;
-    gap: 16px;
+    gap: 12px;
     width: 100%;
-    max-width: 600px;
-    margin-bottom: 16px;
+    max-width: 500px;
+    margin-bottom: 12px;
   }
-  .nav-controls .btn { margin: 0; padding: 14px; font-size: 1rem; }
+  .nav-controls .btn { margin: 0; padding: 10px; font-size: 14px; }
 
   /* Экран 3: Викторина */
-  #screen-quiz { justify-content: flex-start; padding-top: 20px; }
+  #screen-quiz { 
+    justify-content: space-between; /* Равномерно распределяем контент */
+    padding: 10px 15px; 
+  }
+  
   .quiz-header {
     display: flex;
     justify-content: space-between;
     width: 100%;
-    max-width: 650px;
-    margin-bottom: 16px;
-    font-size: 1.1rem;
+    font-size: 12px;
     color: var(--neon);
-    border-bottom: 2px solid var(--neon-dim);
-    padding-bottom: 12px;
+    border-bottom: 1px solid var(--neon-dim);
+    padding-bottom: 5px;
+    margin-bottom: 5px;
   }
   
-  /* Обновленная плашка статуса */
+  /* Плашка статуса */
   .status-container {
     width: 100%;
-    max-width: 650px;
-    margin-bottom: 20px;
     text-align: left;
     background: #111;
-    padding: 16px;
-    border-left: 4px solid var(--orange);
+    padding: 8px 12px;
+    border-left: 3px solid var(--orange);
     border-radius: 4px;
     transition: all 0.3s ease;
   }
-  .status-container.pulse {
-    animation: statusPulse 0.5s ease;
-  }
+  .status-container.pulse { animation: statusPulse 0.5s ease; }
   @keyframes statusPulse {
     0% { box-shadow: 0 0 0 rgba(255, 102, 0, 0); }
-    50% { box-shadow: 0 0 20px var(--orange); background: #1a1a1a; }
+    50% { box-shadow: 0 0 15px var(--orange); background: #1a1a1a; }
     100% { box-shadow: 0 0 0 rgba(255, 102, 0, 0); }
   }
   .status-title {
     font-family: var(--font-head);
     color: var(--orange);
-    font-size: 1.4rem;
-    margin-bottom: 8px;
-    transition: color 0.3s;
+    font-size: 15px;
+    margin-bottom: 2px;
   }
   .status-sub {
-    font-size: 1rem;
+    font-size: 11px;
     color: var(--text);
-    line-height: 1.4;
+    line-height: 1.2;
   }
 
-  /* Контейнер для картинок */
+  /* КАРТИНКИ */
   .meme-container {
     width: 100%;
-    max-width: 600px;
-    height: 250px; /* Фиксированная высота */
-    border-radius: 12px; /* Скругленные углы */
-    margin-bottom: 20px;
-    position: relative;
+    max-width: 500px;
+    height: 120px; /* Фиксированная высота, чтобы не выталкивать контент */
+    border-radius: 10px;
     overflow: hidden;
     background: #000;
-    /* Если картинки нет - контейнер скроется через JS */
+    margin: 5px 0;
+    flex-shrink: 0; /* Запрещаем сжиматься */
   }
   .meme-container img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Красиво заполняет блок без искажений */
+    object-fit: cover; /* Заполняет блок, не искажаясь */
     display: block;
   }
 
   .question-text {
-    font-size: 1.3rem;
+    font-size: 14px;
     font-weight: bold;
     color: var(--text);
-    margin-bottom: 24px;
-    line-height: 1.5;
-    text-align: left;
+    line-height: 1.3;
+    text-align: center;
     width: 100%;
-    max-width: 650px;
+    margin: 5px 0;
   }
+
+  /* Контейнер для ответов */
   .answers {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
     width: 100%;
-    max-width: 650px;
-    margin-bottom: 30px;
+    max-width: 500px;
+    margin-top: 5px;
   }
+  
+  /* Кнопки ответов */
   .answer-btn {
     background: #111;
-    border: 2px solid #444;
+    border: 1px solid #444;
     color: var(--text);
-    padding: 18px 20px;
+    padding: 10px 12px;
     font-family: var(--font-mono);
-    font-size: 1.15rem;
+    font-size: 13px;
     text-align: left;
     cursor: pointer;
     transition: all 0.2s;
     border-radius: 6px;
-    line-height: 1.5;
+    line-height: 1.3;
+    white-space: normal;
+    word-wrap: break-word;
   }
   .answer-btn:active { transform: scale(0.98); }
   .answer-btn.correct { border-color: var(--neon); color: var(--neon); background: rgba(57,255,20,0.1); }
   .answer-btn.wrong { border-color: var(--danger); color: var(--danger); background: rgba(255,0,51,0.1); }
 
   /* Экран результатов */
-  #screen-result { justify-content: center; }
+  #screen-result { justify-content: center; padding: 15px; }
   
   .certificate {
-    border: 4px double var(--orange);
+    border: 3px double var(--orange);
     background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
-    padding: 32px 24px;
-    max-width: 550px;
+    padding: 20px 15px;
+    max-width: 500px;
     width: 100%;
     border-radius: 8px;
-    box-shadow: 0 0 30px rgba(255, 102, 0, 0.2);
+    box-shadow: 0 0 20px rgba(255, 102, 0, 0.2);
     position: relative;
-    margin-bottom: 24px;
+    margin-bottom: 15px;
   }
-  .certificate.gold {
-    border-color: #ffd700;
-    box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
-  }
-  .certificate.silver {
-    border-color: #c0c0c0;
-    box-shadow: 0 0 30px rgba(192, 192, 192, 0.3);
-  }
+  .certificate.gold { border-color: #ffd700; box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
+  .certificate.silver { border-color: #c0c0c0; box-shadow: 0 0 20px rgba(192, 192, 192, 0.3); }
+  
   .certificate::before {
     content: "🏆";
-    font-size: 3rem;
+    font-size: 2rem;
     position: absolute;
-    top: -24px;
+    top: -18px;
     left: 50%;
     transform: translateX(-50%);
     background: var(--bg);
     padding: 0 10px;
   }
-  .certificate h2 { color: var(--orange); font-size: 1.8rem; margin-top: 16px; margin-bottom: 8px; }
+  .certificate h2 { color: var(--orange); font-size: 18px; margin-top: 10px; margin-bottom: 5px; }
   .certificate.gold h2 { color: #ffd700; }
   .certificate.silver h2 { color: #c0c0c0; }
-  .certificate .subtitle { font-size: 1rem; color: var(--neon); margin-bottom: 24px; text-transform: uppercase; letter-spacing: 2px; }
-  .certificate p { font-size: 1.1rem; line-height: 1.6; color: var(--text); margin-bottom: 16px; text-align: left; }
-  .certificate .signature { margin-top: 32px; text-align: right; font-style: italic; color: var(--orange); }
+  .certificate .subtitle { font-size: 12px; color: var(--neon); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+  .certificate p { font-size: 13px; line-height: 1.4; color: var(--text); margin-bottom: 10px; text-align: left; }
+  .certificate .signature { margin-top: 15px; text-align: right; font-style: italic; color: var(--orange); font-size: 12px; }
   .certificate.gold .signature { color: #ffd700; }
   .certificate.silver .signature { color: #c0c0c0; }
   
   .fail-box {
     border: 2px dashed var(--danger);
     background: rgba(255, 0, 51, 0.05);
-    padding: 32px 24px;
-    max-width: 550px;
+    padding: 20px 15px;
+    max-width: 500px;
     width: 100%;
     border-radius: 8px;
-    margin-bottom: 24px;
+    margin-bottom: 15px;
   }
-  .fail-box h2 { color: var(--danger); font-size: 2rem; margin-bottom: 16px; text-shadow: 0 0 20px rgba(255,0,51,0.5); }
-  .fail-box p { font-size: 1.2rem; line-height: 1.6; color: #ddd; margin-bottom: 16px; }
+  .fail-box h2 { color: var(--danger); font-size: 20px; margin-bottom: 10px; }
+  .fail-box p { font-size: 13px; line-height: 1.4; color: #ddd; margin-bottom: 10px; }
   .fail-box .highlight { color: var(--danger); font-weight: bold; text-transform: uppercase; }
 
   /* Модалка */
@@ -350,29 +348,29 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s;
-    padding: 24px;
+    padding: 20px;
   }
   .modal-overlay.active { opacity: 1; pointer-events: auto; }
   .modal-content {
     background: #111;
     border: 2px solid var(--danger);
-    padding: 32px 24px;
+    padding: 20px 15px;
     text-align: center;
-    max-width: 450px;
+    max-width: 350px;
     width: 100%;
-    box-shadow: 0 0 30px var(--danger);
+    box-shadow: 0 0 20px var(--danger);
     transform: translateY(20px);
     transition: transform 0.3s;
     border-radius: 8px;
   }
   .modal-overlay.active .modal-content { transform: translateY(0); }
-  .modal-content h3 { color: var(--danger); font-size: 1.8rem; margin-bottom: 16px; text-shadow: 0 0 15px var(--danger); }
-  .modal-content p { color: var(--text); font-size: 1.1rem; line-height: 1.5; }
+  .modal-content h3 { color: var(--danger); font-size: 18px; margin-bottom: 10px; }
+  .modal-content p { color: var(--text); font-size: 13px; line-height: 1.3; }
 
   .credits {
     position: absolute;
-    bottom: 10px;
-    font-size: 0.8rem;
+    bottom: 5px;
+    font-size: 10px;
     color: var(--muted);
     width: 100%;
     text-align: center;
@@ -391,7 +389,7 @@
 
   <div id="screen-class" class="screen">
     <h1>ВЫБЕРИ СВОЙ<br>СТАРТОВЫЙ КЛАСС</h1>
-    <p style="margin-top: 24px; max-width: 550px;">
+    <p style="margin-top: 10px; max-width: 400px;">
       Ты — Сперматозоид Папы Димы. Твоя цель — выжить на трассе и стать его Сыном (или Дочерью).<br>Выбери, кем ты родишься.
     </p>
     <div class="class-buttons">
@@ -402,7 +400,7 @@
 
   <div id="screen-theory" class="screen">
     <h2>БАЗА ЗНАНИЙ<br>(ШПАРГАЛКА)</h2>
-    <p style="font-size: 1.05rem;">Пролистай теорию. Тут всё, что нужно, чтобы не сойти с ума на таможне.</p>
+    <p style="font-size: 12px; margin-bottom: 10px;">Пролистай теорию. Тут всё, что нужно, чтобы не сойти с ума на таможне.</p>
     
     <div class="card-container" id="theory-container">
       <div class="card active">
@@ -438,7 +436,7 @@
     
     <div class="status-container" id="status-container">
       <div class="status-title" id="status-title">СПЕРМАТОЗОИД ПАПЫ ДИМЫ</div>
-      <div class="status-sub" id="status-sub">До повышения осталось правильных ответов: 1</div>
+      <div class="status-sub" id="status-sub">До повышения: 1 ответ</div>
     </div>
 
     <div class="meme-container" id="meme-container">
@@ -468,14 +466,14 @@
       <p>Тот, кто прошел этот тест, но не стал Сыном Папы Димы — <strong>недостоин ничего</strong>. Таможня вас завернула, тахограф плачет. Вас ждет пересдача и позор.</p>
     </div>
 
-    <button class="btn" onclick="location.reload()">[ ПРОЙТИ ЗАНОВО ]</button>
+    <button class="btn" onclick="location.reload()" style="margin-top: 10px;">[ ПРОЙТИ ЗАНОВО ]</button>
   </div>
 
   <div class="modal-overlay" id="modal">
     <div class="modal-content">
       <h3 id="modal-title">ОШИБКА</h3>
       <p id="modal-text">...</p>
-      <button class="btn" style="margin-top: 24px; border-color: var(--danger); color: var(--danger); box-shadow: 0 0 10px var(--danger-dim);" onclick="closeModal()">ПОНЯЛ</button>
+      <button class="btn" style="margin-top: 15px; border-color: var(--danger); color: var(--danger); box-shadow: 0 0 10px var(--danger-dim);" onclick="closeModal()">ПОНЯЛ</button>
     </div>
   </div>
 
@@ -527,13 +525,12 @@
     currentCorrectIndex: -1
   };
 
-  // Статусы привязаны к каждому правильному ответу
   const statusNames = [
-    "СПЕРМАТОЗОИД ПАПЫ ДИМЫ",       // 0 правильных
-    "ГОЛОВАСТИК В КУЗОВЕ",          // 1 правильный
-    "СТАЖЁР НА ТАМОЖНЕ",            // 2 правильных
-    "ДАЛЬНОБОЙ-СЕРЕДНЯК",           // 3 правильных
-    "СЫН ПАПЫ ДИМЫ"                 // 4+ правильных
+    "СПЕРМАТОЗОИД ПАПЫ ДИМЫ",
+    "ГОЛОВАСТИК В КУЗОВЕ",
+    "СТАЖЁР НА ТАМОЖНЕ",
+    "ДАЛЬНОБОЙ-СЕРЕДНЯК",
+    "СЫН ПАПЫ ДИМЫ"
   ];
 
   if (window.Telegram && window.Telegram.WebApp) window.Telegram.WebApp.ready();
@@ -551,7 +548,7 @@
         if (j % 3 === 0) sfxType();
         await new Promise(r => setTimeout(r, 30));
       }
-      await new Promise(r => setTimeout(r, 400));
+      await new Promise(r => setTimeout(r, 300));
     }
     document.getElementById('boot-btn-wrapper').classList.add('show');
     sfxSuccess();
@@ -605,9 +602,7 @@
     renderQuiz();
   }
 
-  // Логика смены статуса
   function updateStatusUI() {
-    // Определяем уровень (каждый правильный ответ = +1 уровень, макс 4)
     let stage = state.rep;
     if (stage > 4) stage = 4;
     
@@ -619,20 +614,18 @@
     const titleEl = document.getElementById('status-title');
     const containerEl = document.getElementById('status-container');
     
-    // Если статус изменился, запускаем пульсацию
     if (titleEl.innerText !== currentStatus) {
       titleEl.innerText = currentStatus;
       containerEl.classList.remove('pulse');
-      void containerEl.offsetWidth; // Триггер перерисовки
+      void containerEl.offsetWidth; 
       containerEl.classList.add('pulse');
     }
 
-    // Обновляем текст прогресса
     if (stage < 4) {
       let left = 4 - state.rep;
-      document.getElementById('status-sub').innerText = `До повышения осталось правильных ответов: ${left}`;
+      document.getElementById('status-sub').innerText = `До повышения осталось: ${left}`;
     } else {
-      document.getElementById('status-sub').innerText = `Максимальный уровень достигнут!`;
+      document.getElementById('status-sub').innerText = `Максимальный уровень!`;
     }
   }
 
@@ -640,17 +633,14 @@
     const q = quizData[state.quizIndex];
     document.getElementById('quiz-progress').innerText = `ВОПРОС ${state.quizIndex + 1}/${quizData.length}`;
     
-    // Обновляем статус ДО начала показа вопроса
     updateStatusUI();
     
-    // Работа с картинкой
     const imgContainer = document.getElementById('meme-container');
     const img = document.getElementById('meme-img');
     
     img.src = q.meme;
-    imgContainer.style.display = 'block'; // Показываем контейнер
+    imgContainer.style.display = 'block';
     
-    // Если картинка битая или её нет, полностью скрываем контейнер
     img.onerror = () => {
       imgContainer.style.display = 'none';
     };
@@ -689,7 +679,7 @@
       state.rep++;
       sfxSuccess();
       vibrate('success');
-      updateStatusUI(); // Сразу обновляем статус при правильном ответе
+      updateStatusUI(); 
     } else {
       btn.classList.add('wrong');
       allBtns[state.currentCorrectIndex].classList.add('correct');
@@ -710,7 +700,7 @@
       } else {
         showResult();
       }
-    }, 500); 
+    }, 400); 
   }
 
   function showModal(title, text) {
@@ -733,7 +723,6 @@
     const failBox = document.getElementById('fail-box');
     
     if (state.rep === 10) {
-      // ИДЕАЛЬНЫЙ РЕЗУЛЬТАТ
       certBox.style.display = 'block';
       certBox.className = 'certificate gold';
       failBox.style.display = 'none';
@@ -748,7 +737,6 @@
       sfxSuccess();
       vibrate('success');
     } else if (state.rep >= 7) {
-      // ХОРОШИЙ РЕЗУЛЬТАТ
       certBox.style.display = 'block';
       certBox.className = 'certificate silver';
       failBox.style.display = 'none';
@@ -763,7 +751,6 @@
       sfxSuccess();
       vibrate('success');
     } else {
-      // ПРОВАЛ
       certBox.style.display = 'none';
       failBox.style.display = 'block';
       
