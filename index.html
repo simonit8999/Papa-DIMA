@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0a0a0a">
-<title>ДАЛЬНОБОЙ: КВЕСТ v2</title> <!-- ДОБАВИЛ V2 ЧТОБЫ ТЫ ВИДЕЛ ОБНОВЛЕНИЕ -->
+<title>ДАЛЬНОБОЙ: КВЕСТ v5</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   :root {
@@ -219,24 +219,25 @@
     line-height: 1.4;
   }
 
+  /* Контейнер для картинок 3:2 */
   .meme-container {
     width: 100%;
-    max-width: 650px;
-    height: 220px;
-    background: #000;
+    max-width: 600px;
+    aspect-ratio: 3 / 2; /* Идеальные пропорции под 1200x800 */
     border: 2px solid #333;
     border-radius: 8px;
     margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    background: #000;
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
-    position: relative;
   }
   .meme-container img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover; /* Картинка заполняет всё пространство */
     display: block;
   }
   .meme-placeholder {
@@ -244,12 +245,7 @@
     font-size: 1rem;
     font-style: italic;
     text-align: center;
-    padding: 0 20px;
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%;
   }
 
   .question-text {
@@ -299,6 +295,15 @@
     border-radius: 8px;
     box-shadow: 0 0 30px rgba(255, 102, 0, 0.2);
     position: relative;
+    margin-bottom: 24px;
+  }
+  .certificate.gold {
+    border-color: #ffd700;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+  }
+  .certificate.silver {
+    border-color: #c0c0c0;
+    box-shadow: 0 0 30px rgba(192, 192, 192, 0.3);
   }
   .certificate::before {
     content: "🏆";
@@ -311,9 +316,13 @@
     padding: 0 10px;
   }
   .certificate h2 { color: var(--orange); font-size: 1.8rem; margin-top: 16px; margin-bottom: 8px; }
+  .certificate.gold h2 { color: #ffd700; }
+  .certificate.silver h2 { color: #c0c0c0; }
   .certificate .subtitle { font-size: 1rem; color: var(--neon); margin-bottom: 24px; text-transform: uppercase; letter-spacing: 2px; }
   .certificate p { font-size: 1.1rem; line-height: 1.6; color: var(--text); margin-bottom: 16px; text-align: left; }
   .certificate .signature { margin-top: 32px; text-align: right; font-style: italic; color: var(--orange); }
+  .certificate.gold .signature { color: #ffd700; }
+  .certificate.silver .signature { color: #c0c0c0; }
   
   .fail-box {
     border: 2px dashed var(--danger);
@@ -322,6 +331,7 @@
     max-width: 550px;
     width: 100%;
     border-radius: 8px;
+    margin-bottom: 24px;
   }
   .fail-box h2 { color: var(--danger); font-size: 2rem; margin-bottom: 16px; text-shadow: 0 0 20px rgba(255,0,51,0.5); }
   .fail-box p { font-size: 1.2rem; line-height: 1.6; color: #ddd; margin-bottom: 16px; }
@@ -371,8 +381,6 @@
 <body>
 
 <div id="app">
-
-  <!-- ЭКРАН 0: BOOT -->
   <div id="screen-boot" class="screen active">
     <div id="boot-lines"></div>
     <div class="boot-btn-wrapper" id="boot-btn-wrapper">
@@ -380,7 +388,6 @@
     </div>
   </div>
 
-  <!-- ЭКРАН 1: ВЫБОР КЛАССА -->
   <div id="screen-class" class="screen">
     <h1>ВЫБЕРИ СВОЙ<br>СТАРТОВЫЙ КЛАСС</h1>
     <p style="margin-top: 24px; max-width: 550px;">
@@ -392,7 +399,6 @@
     </div>
   </div>
 
-  <!-- ЭКРАН 2: ТЕОРИЯ -->
   <div id="screen-theory" class="screen">
     <h2>БАЗА ЗНАНИЙ<br>(ШПАРГАЛКА)</h2>
     <p style="font-size: 1.05rem;">Пролистай теорию. Тут всё, что нужно, чтобы не сойти с ума на таможне.</p>
@@ -423,7 +429,6 @@
     <button class="btn" onclick="startQuiz()">[ Я ВСЁ ПОНЯЛ, В ТАЧКУ ]</button>
   </div>
 
-  <!-- ЭКРАН 3: ВИКТОРИНА -->
   <div id="screen-quiz" class="screen">
     <div class="quiz-header">
       <span id="quiz-progress">ВОПРОС 1/10</span>
@@ -444,11 +449,11 @@
     <div class="answers" id="quiz-answers"></div>
   </div>
 
-  <!-- ЭКРАН 5: РЕЗУЛЬТАТ -->
   <div id="screen-result" class="screen">
+    <!-- Грамота -->
     <div class="certificate" id="certificate-box" style="display: none;">
-      <h2>ТОРЖЕСТВЕННАЯ ГРАМОТА</h2>
-      <div class="subtitle">Официальное усыновление / удочерение</div>
+      <h2 id="cert-title">ТОРЖЕСТВЕННАЯ ГРАМОТА</h2>
+      <div class="subtitle" id="cert-subtitle">Официальное усыновление / удочерение</div>
       <p>Настоящим документом подтверждается, что гражданин(ка) <strong id="cert-name">...</strong> успешно прошел(ла) все испытания дорогой, сдал(а) экзамен на знание таможенных конвенций и тахографа, и признан(а) достойным(ой) членом семьи.</p>
       <p>С этого дня вы официально становитесь <strong id="cert-role">СЫНОМ</strong> Папы Димы. Таможня вас уважает, дальнобойщики жмут руку, а тахограф поет вам колыбельные.</p>
       <div class="signature">
@@ -457,6 +462,7 @@
       </div>
     </div>
 
+    <!-- Провал -->
     <div class="fail-box" id="fail-box" style="display: none;">
       <h2>ПРОВАЛ</h2>
       <p>Вы набрали <strong id="fail-score">0</strong> баллов из 10 возможных.</p>
@@ -464,10 +470,9 @@
       <p>Тот, кто прошел этот тест, но не стал Сыном Папы Димы — <strong>недостоин ничего</strong>. Таможня вас завернула, тахограф плачет. Вас ждет пересдача и позор.</p>
     </div>
 
-    <button class="btn" style="margin-top: 32px;" onclick="location.reload()">[ ПРОЙТИ ЗАНОВО ]</button>
+    <button class="btn" onclick="location.reload()">[ ПРОЙТИ ЗАНОВО ]</button>
   </div>
 
-  <!-- МОДАЛКА -->
   <div class="modal-overlay" id="modal">
     <div class="modal-content">
       <h3 id="modal-title">ОШИБКА</h3>
@@ -480,7 +485,6 @@
 </div>
 
 <script>
-  // --- ЗВУКОВОЙ ДВИЖОК ---
   const AudioContext = window.AudioContext || window.webkitAudioContext;
   let audioCtx;
 
@@ -508,7 +512,6 @@
   function sfxError() { playTone(150, 'sawtooth', 0.3, 0.1); }
   function sfxType() { playTone(400, 'square', 0.02, 0.02); }
 
-  // --- HAPTIC FEEDBACK ---
   function vibrate(type = 'light') {
     if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
       if (type === 'light' || type === 'medium') window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
@@ -518,14 +521,13 @@
     }
   }
 
-  // --- СОСТОЯНИЕ ---
   const state = {
     gender: null,
     rep: 0,
     quizIndex: 0,
     theoryIndex: 0,
     statusStage: 0,
-    currentCorrectIndex: -1 // Храним правильный индекс для текущего вопроса
+    currentCorrectIndex: -1
   };
 
   const statusNames = [
@@ -538,7 +540,6 @@
 
   if (window.Telegram && window.Telegram.WebApp) window.Telegram.WebApp.ready();
 
-  // --- ЭКРАН 0 ---
   const bootLines = ["[СИСТЕМА ЗАГРУЖАЕТСЯ...]", "[ПОДКЛЮЧЕНИЕ К ТАХОГРАФУ...]", "[ОШИБКА: ОБНАРУЖЕН СТУДЕНТ]"];
   async function runBootSequence() {
     const container = document.getElementById('boot-lines');
@@ -558,7 +559,6 @@
     sfxSuccess();
   }
 
-  // --- УПРАВЛЕНИЕ ---
   function goToScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
@@ -577,81 +577,19 @@
     cards.forEach((c, i) => c.classList.toggle('active', i === state.theoryIndex));
   }
 
-  // --- ВИКТОРИНА ---
   const quizData = [
-    {
-      q: "Подъезжаешь к границе. Что даешь таможеннику?",
-      a: ["Книжку МДП", "Взятку (пачку печенья 'Юбилейное')", "Скидку на доставку", "Свой паспорт с пропиской"],
-      correct: 0, // Книжка МДП
-      meme: "meme1.jpg",
-      memes: ["ШТРАФ: ВЗЯТКА НЕ ПРОШЛА, ТАМОЖНЯ ЛЮБИТ 'КРАСНЫЙ МАК'", "МИНУС: ТЕБЯ ЗАВЕРНУЛИ НА ГРАНИЦЕ ЗА КОРРУПЦИЮ"]
-    },
-    {
-      q: "Сколько часов можно ехать без остановки?",
-      a: ["24 часа подряд, я же Сикс-Севен (67)", "4.5 часа", "Пока не кончится соляра"],
-      correct: 1, // 4.5 часа
-      meme: "meme2.jpg",
-      memes: ["ШТРАФ: ТАХОГРАФ ВСЁ ВИДЕЛ", "ТЫ УСНУЛ ЗА РУЛЕМ И СНЕС ЗНАК '50'"]
-    },
-    {
-      q: "С какой максимальной скоростью можно ездить возле дома Папы Димы?",
-      a: ["67 км/ч", "120 км/ч", "Пешком"],
-      correct: 0, // 67 км/ч
-      meme: "meme3.jpg",
-      memes: ["ОШИБКА: ПАПА ДИМА ВЫБЕЖАЛ ИЗ ДОМА С МОНТИРОВКОЙ", "ШТРАФ: ТЫ ПРЕВЫСИЛ СКОРОСТЬ ПЕРЕД ДОМОМ"]
-    },
-    {
-      q: "Что такое TIR (МДП)?",
-      a: ["Твой экспресс-билет через границы", "Новый айфон", "Тип топлива"],
-      correct: 0, // Экспресс-билет
-      meme: "meme4.jpg",
-      memes: ["ОШИБКА: ТЫ ЗАСТРЯЛ НА ГРАНИЦЕ НА 3 ДНЯ", "МИНУС: ТАМОЖНЯ ЗАВАЛИЛА ТЕБЯ БУМАЖКАМИ"]
-    },
-    {
-      q: "Дальнобойщик спрашивает: 'Вась, связь есть?'. Что ему нужно?",
-      a: ["Рация для связи с диспетчером", "Мобильный интернет для ТикТока", "Позвонить маме"],
-      correct: 0, // Рация
-      meme: "meme5.jpg",
-      memes: ["ОШИБКА: ТЫ НЕ НА СВЯЗИ, ТЫ В ПРОСТРАНСТВЕ", "МИНУС: ДИСПЕТЧЕР ОРЕТ, ЧТО ТЫ ПРОПАЛ"]
-    },
-    {
-      q: "Что нужно для перевозки опасных грузов?",
-      a: ["Свидетельство ДОПОГ", "Просто быть смелым", "Наклейка 'Осторожно, злой водитель'"],
-      correct: 0, // ДОПОГ
-      meme: "meme6.jpg",
-      memes: ["ПАТРУЛЬ: ТЕБЯ ОСТАНОВИЛИ ЗА НАРУШЕНИЕ ADR", "МИНУС: ОПАСНЫЙ ГРУЗ БЕЗ ДОКУМЕНТОВ"]
-    },
-    {
-      q: "Россия и Беларусь: к какому году планируют перейти к безразрешительным перевозкам?",
-      a: ["До 2030 года", "До завтра", "Никогда, это же бюрократия"],
-      correct: 0, // 2030
-      meme: "meme7.jpg",
-      memes: ["ОШИБКА: ТЫ ЖДЕШЬ РАЗРЕШЕНИЯ, А ПОЕЗД УШЕЛ", "МИНУС: СТОИШЬ В ОЧЕРЕДИ ЗА ДОЗВОЛОМ"]
-    },
-    {
-      q: "Что такое e-CMR?",
-      a: ["Электронная накладная", "Электромобиль", "Новый мем"],
-      correct: 0, // Электронная накладная
-      meme: "meme8.jpg",
-      memes: ["ОШИБКА: ТЫ ЖИВЕШЬ В КАМЕННОМ ВЕКЕ", "МИНУС: БУМАЖКИ, БУМАЖКИ, БУМАЖКИ..."]
-    },
-    {
-      q: "Кто выдает книжки МДП в России?",
-      a: ["АСМАП", "Почта России", "Любой водитель на заправке"],
-      correct: 0, // АСМАП
-      meme: "meme9.jpg",
-      memes: ["ОШИБКА: ТЫ КУПИЛ ПОДДЕЛКУ В ПЕРЕХОДЕ", "МИНУС: ТВОЯ КНИЖКА НЕ ДЕЙСТВИТЕЛЬНА"]
-    },
-    {
-      q: "Водитель орет: 'Убери телефон!'. Что ты сделал не так?",
-      a: ["Снимал его на видео без спроса", "Неправильно припарковался", "Не заправил фуру"],
-      correct: 0, // Снимал видео
-      meme: "meme10.jpg",
-      memes: ["ОШИБКА: ТЫ СТАЛ ЗВЕЗДОЙ ТИКТОКА", "МИНУС: ВИДЕО НАБРАЛО 100К ПРОСМОТРОВ"]
-    }
+    { q: "Подъезжаешь к границе. Что даешь таможеннику?", a: ["Книжку МДП", "Взятку (пачку печенья 'Юбилейное')", "Скидку на доставку", "Свой паспорт с пропиской"], correct: 0, meme: "meme1.jpg", memes: ["ШТРАФ: ВЗЯТКА НЕ ПРОШЛА, ТАМОЖНЯ ЛЮБИТ 'КРАСНЫЙ МАК'", "МИНУС: ТЕБЯ ЗАВЕРНУЛИ НА ГРАНИЦЕ ЗА КОРРУПЦИЮ"] },
+    { q: "Сколько часов можно ехать без остановки?", a: ["24 часа подряд, я же Сикс-Севен (67)", "4.5 часа", "Пока не кончится соляра"], correct: 1, meme: "meme2.jpg", memes: ["ШТРАФ: ТАХОГРАФ ВСЁ ВИДЕЛ", "ТЫ УСНУЛ ЗА РУЛЕМ И СНЕС ЗНАК '50'"] },
+    { q: "С какой максимальной скоростью можно ездить возле дома Папы Димы?", a: ["67 км/ч", "120 км/ч", "Пешком"], correct: 0, meme: "meme3.jpg", memes: ["ОШИБКА: ПАПА ДИМА ВЫБЕЖАЛ ИЗ ДОМА С МОНТИРОВКОЙ", "ШТРАФ: ТЫ ПРЕВЫСИЛ СКОРОСТЬ ПЕРЕД ДОМОМ"] },
+    { q: "Что такое TIR (МДП)?", a: ["Твой экспресс-билет через границы", "Новый айфон", "Тип топлива"], correct: 0, meme: "meme4.jpg", memes: ["ОШИБКА: ТЫ ЗАСТРЯЛ НА ГРАНИЦЕ НА 3 ДНЯ", "МИНУС: ТАМОЖНЯ ЗАВАЛИЛА ТЕБЯ БУМАЖКАМИ"] },
+    { q: "Дальнобойщик спрашивает: 'Вась, связь есть?'. Что ему нужно?", a: ["Рация для связи с диспетчером", "Мобильный интернет для ТикТока", "Позвонить маме"], correct: 0, meme: "meme5.jpg", memes: ["ОШИБКА: ТЫ НЕ НА СВЯЗИ, ТЫ В ПРОСТРАНСТВЕ", "МИНУС: ДИСПЕТЧЕР ОРЕТ, ЧТО ТЫ ПРОПАЛ"] },
+    { q: "Что нужно для перевозки опасных грузов?", a: ["Свидетельство ДОПОГ", "Просто быть смелым", "Наклейка 'Осторожно, злой водитель'"], correct: 0, meme: "meme6.jpg", memes: ["ПАТРУЛЬ: ТЕБЯ ОСТАНОВИЛИ ЗА НАРУШЕНИЕ ADR", "МИНУС: ОПАСНЫЙ ГРУЗ БЕЗ ДОКУМЕНТОВ"] },
+    { q: "Россия и Беларусь: к какому году планируют перейти к безразрешительным перевозкам?", a: ["До 2030 года", "До завтра", "Никогда, это же бюрократия"], correct: 0, meme: "meme7.jpg", memes: ["ОШИБКА: ТЫ ЖДЕШЬ РАЗРЕШЕНИЯ, А ПОЕЗД УШЕЛ", "МИНУС: СТОИШЬ В ОЧЕРЕДИ ЗА ДОЗВОЛОМ"] },
+    { q: "Что такое e-CMR?", a: ["Электронная накладная", "Электромобиль", "Новый мем"], correct: 0, meme: "meme8.jpg", memes: ["ОШИБКА: ТЫ ЖИВЕШЬ В КАМЕННОМ ВЕКЕ", "МИНУС: БУМАЖКИ, БУМАЖКИ, БУМАЖКИ..."] },
+    { q: "Кто выдает книжки МДП в России?", a: ["АСМАП", "Почта России", "Любой водитель на заправке"], correct: 0, meme: "meme9.jpg", memes: ["ОШИБКА: ТЫ КУПИЛ ПОДДЕЛКУ В ПЕРЕХОДЕ", "МИНУС: ТВОЯ КНИЖКА НЕ ДЕЙСТВИТЕЛЬНА"] },
+    { q: "Водитель орет: 'Убери телефон!'. Что ты сделал не так?", a: ["Снимал его на видео без спроса", "Неправильно припарковался", "Не заправил фуру"], correct: 0, meme: "meme10.jpg", memes: ["ОШИБКА: ТЫ СТАЛ ЗВЕЗДОЙ ТИКТОКА", "МИНУС: ВИДЕО НАБРАЛО 100К ПРОСМОТРОВ"] }
   ];
 
-  // Функция для перемешивания массива (Фишер-Йетс)
   function shuffleArray(array) {
     const arr = [...array];
     for (let i = arr.length - 1; i > 0; i--) {
@@ -710,30 +648,24 @@
 
     document.getElementById('quiz-question').innerText = q.q;
     
-    // 1. Запоминаем правильный ответ ДО перемешивания
     const correctText = q.a[q.correct];
 
-    // 2. Создаем массив объектов (чтобы знать, какой текст был правильным)
     const answersWithStatus = q.a.map(text => ({
       text: text,
       isCorrect: text === correctText
     }));
 
-    // 3. Перемешиваем
     const shuffled = shuffleArray(answersWithStatus);
-
-    // 4. Находим новый индекс правильного ответа
     state.currentCorrectIndex = shuffled.findIndex(item => item.isCorrect);
 
     const answersContainer = document.getElementById('quiz-answers');
     answersContainer.innerHTML = '';
     
-    // 5. Отрисовываем
     shuffled.forEach((item, index) => {
       const btn = document.createElement('button');
       btn.className = 'answer-btn';
       btn.innerText = `${String.fromCharCode(65 + index)}) ${item.text}`;
-      btn.onclick = () => handleAnswer(index, btn); // Передаем ТЕКУЩИЙ ИНДЕКС
+      btn.onclick = () => handleAnswer(index, btn);
       answersContainer.appendChild(btn);
     });
   }
@@ -751,7 +683,6 @@
       vibrate('success');
     } else {
       btn.classList.add('wrong');
-      // Подсвечиваем правильный ответ по сохраненному индексу
       allBtns[state.currentCorrectIndex].classList.add('correct');
       
       sfxError();
@@ -771,10 +702,9 @@
       } else {
         showResult();
       }
-    }, 300);
+    }, 400); // Чуть увеличил задержку, чтобы юзер успел увидеть правильный ответ
   }
 
-  // --- МОДАЛКА ---
   function showModal(title, text) {
     document.getElementById('modal-title').innerText = title;
     document.getElementById('modal-text').innerText = text;
@@ -786,26 +716,46 @@
     document.getElementById('modal').classList.remove('active');
   }
 
-  // --- ЭКРАН 5: РЕЗУЛЬТАТ ---
   function showResult() {
     goToScreen('screen-result');
     
     const certBox = document.getElementById('certificate-box');
+    const certTitle = document.getElementById('cert-title');
+    const certSubtitle = document.getElementById('cert-subtitle');
     const failBox = document.getElementById('fail-box');
     
-    const isWinner = state.rep >= 7;
-    
-    if (isWinner) {
+    if (state.rep === 10) {
+      // ИДЕАЛЬНЫЙ РЕЗУЛЬТАТ
       certBox.style.display = 'block';
+      certBox.className = 'certificate gold';
       failBox.style.display = 'none';
       
-      const role = state.gender === 'boy' ? 'СЫНОМ' : 'ДОЧЕРЬЮ';
+      certTitle.innerText = "ЗОЛОТАЯ ГРАМОТА";
+      certSubtitle.innerText = "Официальное усыновление / удочерение";
+      
+      const role = state.gender === 'boy' ? 'РОДНЫМ СЫНОМ' : 'РОДНОЙ ДОЧЕРЬЮ';
+      document.getElementById('cert-role').innerText = role;
+      document.getElementById('cert-name').innerText = "Лучший студент ВГЛТУ";
+      
+      sfxSuccess();
+      vibrate('success');
+    } else if (state.rep >= 7) {
+      // ХОРОШИЙ РЕЗУЛЬТАТ
+      certBox.style.display = 'block';
+      certBox.className = 'certificate silver';
+      failBox.style.display = 'none';
+      
+      certTitle.innerText = "СЕРЕБРЯНАЯ ГРАМОТА";
+      certSubtitle.innerText = "Официальное усыновление / удочерение";
+      
+      const role = state.gender === 'boy' ? 'ПРИЕМНЫМ СЫНОМ' : 'ПРИЕМНОЙ ДОЧЕРЬЮ';
       document.getElementById('cert-role').innerText = role;
       document.getElementById('cert-name').innerText = "Студент ВГЛТУ";
       
       sfxSuccess();
       vibrate('success');
     } else {
+      // ПРОВАЛ
       certBox.style.display = 'none';
       failBox.style.display = 'block';
       
@@ -816,7 +766,6 @@
     }
   }
 
-  // --- ЗАПУСК ---
   window.onload = () => {
     document.body.addEventListener('click', initAudio, { once: true });
     runBootSequence();
@@ -825,4 +774,3 @@
 </script>
 </body>
 </html>
-```
