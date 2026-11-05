@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0a0a0a">
-<title>ДАЛЬНОБОЙ: КВЕСТ v8</title>
+<title>ДАЛЬНОБОЙ: КВЕСТ v10</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   :root {
@@ -30,7 +30,7 @@
     height: 100%;
     height: 100dvh; /* Идеально под мобилки */
     width: 100%;
-    overflow: hidden; /* Запрет скролла всего окна */
+    overflow: hidden; /* Запрет скролла окна */
     background: var(--bg);
     color: var(--text);
     font-family: var(--font-mono);
@@ -40,7 +40,8 @@
     position: relative;
     width: 100%;
     height: 100%;
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 
   .screen {
@@ -64,132 +65,19 @@
     transform: translateY(0);
   }
 
-  h1, h2, h3 {
-    font-family: var(--font-head);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    line-height: 1.2;
-    text-shadow: 0 0 10px var(--neon-dim);
+  /* ЭКРАН ВИКТОРИНЫ (Плотная компоновка) */
+  #screen-quiz {
+    justify-content: space-between; /* Распределяем контент */
+    padding: 10px 12px;
   }
 
-  h1 { font-size: 22px; color: var(--neon); margin-bottom: 10px; }
-  h2 { font-size: 20px; color: var(--white); margin-bottom: 10px; }
-  h3 { font-size: 16px; color: var(--orange); margin-bottom: 10px; }
-
-  p { font-size: 13px; line-height: 1.4; margin-bottom: 10px; color: #dddddd; }
-
-  .btn {
-    background: transparent;
-    border: 2px solid var(--neon);
-    color: var(--neon);
-    padding: 12px 20px;
-    font-family: var(--font-head);
-    font-size: 16px;
-    text-transform: uppercase;
-    cursor: pointer;
-    box-shadow: 0 0 10px var(--neon-dim), inset 0 0 10px var(--neon-dim);
-    transition: all 0.1s ease;
+  .quiz-top {
     width: 100%;
-    max-width: 400px;
-    margin: 6px 0;
-  }
-  .btn:active {
-    transform: scale(0.96) translateY(2px);
-    box-shadow: 0 0 20px var(--neon), inset 0 0 20px var(--neon);
-    background: rgba(57, 255, 20, 0.1);
-  }
-  .btn.orange {
-    border-color: var(--orange);
-    color: var(--orange);
-    box-shadow: 0 0 10px var(--orange-dim), inset 0 0 10px var(--orange-dim);
-  }
-  .btn.orange:active {
-    box-shadow: 0 0 20px var(--orange), inset 0 0 20px var(--orange);
-    background: rgba(255, 102, 0, 0.1);
-  }
-
-  /* Экран 0 */
-  #screen-boot {
-    justify-content: flex-start;
-    padding-top: 15vh;
-    text-align: left;
-    align-items: flex-start;
-  }
-  .boot-text {
-    font-size: 14px;
-    color: var(--neon);
-    min-height: 1.5em;
-    margin-bottom: 8px;
-  }
-  .boot-text.danger { color: var(--danger); text-shadow: 0 0 10px var(--danger); }
-  .boot-btn-wrapper {
-    margin-top: 30px;
-    opacity: 0;
-    transition: opacity 0.5s;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-  }
-  .boot-btn-wrapper.show { opacity: 1; }
-
-  /* Экран 1 */
-  .class-buttons {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    width: 100%;
-    max-width: 400px;
-    margin-top: 15px;
+    gap: 6px;
   }
 
-  /* Экран 2: Карточки */
-  .card-container {
-    width: 100%;
-    max-width: 500px;
-    height: 200px;
-    position: relative;
-    margin: 15px 0;
-    perspective: 1000px;
-  }
-  .card {
-    position: absolute;
-    inset: 0;
-    background: #111;
-    border: 2px solid var(--orange);
-    box-shadow: 0 0 15px var(--orange-dim);
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    opacity: 0;
-    transform: translateX(50px);
-    transition: all 0.3s ease;
-    pointer-events: none;
-    border-radius: 8px;
-  }
-  .card.active {
-    opacity: 1;
-    transform: translateX(0);
-    pointer-events: auto;
-  }
-  .card h3 { font-size: 18px; text-align: center; }
-  .card p { color: var(--text); margin-bottom: 0; font-size: 13px; line-height: 1.4; text-align: center; }
-  
-  .nav-controls {
-    display: flex;
-    gap: 12px;
-    width: 100%;
-    max-width: 500px;
-    margin-bottom: 12px;
-  }
-  .nav-controls .btn { margin: 0; padding: 10px; font-size: 14px; }
-
-  /* Экран 3: Викторина */
-  #screen-quiz { 
-    justify-content: space-between; /* Равномерно распределяем контент */
-    padding: 10px 15px; 
-  }
-  
   .quiz-header {
     display: flex;
     justify-content: space-between;
@@ -197,16 +85,15 @@
     font-size: 12px;
     color: var(--neon);
     border-bottom: 1px solid var(--neon-dim);
-    padding-bottom: 5px;
-    margin-bottom: 5px;
+    padding-bottom: 4px;
   }
-  
-  /* Плашка статуса */
+
+  /* Компактная плашка статуса */
   .status-container {
     width: 100%;
     text-align: left;
     background: #111;
-    padding: 8px 12px;
+    padding: 8px 10px;
     border-left: 3px solid var(--orange);
     border-radius: 4px;
     transition: all 0.3s ease;
@@ -220,61 +107,62 @@
   .status-title {
     font-family: var(--font-head);
     color: var(--orange);
-    font-size: 15px;
+    font-size: 16px;
     margin-bottom: 2px;
   }
   .status-sub {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--text);
     line-height: 1.2;
   }
 
-  /* КАРТИНКИ */
+  /* КРИТИЧЕСКИ ВАЖНО: Картинки */
   .meme-container {
     width: 100%;
     max-width: 500px;
-    height: 120px; /* Фиксированная высота, чтобы не выталкивать контент */
-    border-radius: 10px;
+    height: 160px; /* Фиксированная высота */
+    border-radius: 12px;
     overflow: hidden;
     background: #000;
-    margin: 5px 0;
-    flex-shrink: 0; /* Запрещаем сжиматься */
+    margin: 10px 0;
+    flex-shrink: 0;
   }
   .meme-container img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Заполняет блок, не искажаясь */
+    object-fit: cover; /* Заполняет блок, не сплющиваясь */
+    object-position: center;
     display: block;
   }
 
   .question-text {
-    font-size: 14px;
+    font-size: 18px;
     font-weight: bold;
     color: var(--text);
     line-height: 1.3;
     text-align: center;
     width: 100%;
-    margin: 5px 0;
+    margin-bottom: 10px;
   }
 
   /* Контейнер для ответов */
   .answers {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 8px; /* Маленький отступ между кнопками */
     width: 100%;
     max-width: 500px;
-    margin-top: 5px;
+    margin-bottom: 10px;
   }
-  
+
   /* Кнопки ответов */
   .answer-btn {
-    background: #111;
-    border: 1px solid #444;
+    background: rgba(255, 255, 255, 0.05); /* Полупрозрачный фон */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Тонкая рамка */
     color: var(--text);
-    padding: 10px 12px;
+    padding: 12px 15px;
     font-family: var(--font-mono);
-    font-size: 13px;
+    font-size: 14px;
     text-align: left;
     cursor: pointer;
     transition: all 0.2s;
@@ -283,98 +171,98 @@
     white-space: normal;
     word-wrap: break-word;
   }
-  .answer-btn:active { transform: scale(0.98); }
+  .answer-btn:active { background: rgba(255, 255, 255, 0.15); transform: scale(0.98); }
   .answer-btn.correct { border-color: var(--neon); color: var(--neon); background: rgba(57,255,20,0.1); }
   .answer-btn.wrong { border-color: var(--danger); color: var(--danger); background: rgba(255,0,51,0.1); }
 
-  /* Экран результатов */
-  #screen-result { justify-content: center; padding: 15px; }
-  
-  .certificate {
-    border: 3px double var(--orange);
-    background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
-    padding: 20px 15px;
-    max-width: 500px;
-    width: 100%;
-    border-radius: 8px;
-    box-shadow: 0 0 20px rgba(255, 102, 0, 0.2);
-    position: relative;
-    margin-bottom: 15px;
-  }
-  .certificate.gold { border-color: #ffd700; box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
-  .certificate.silver { border-color: #c0c0c0; box-shadow: 0 0 20px rgba(192, 192, 192, 0.3); }
-  
-  .certificate::before {
-    content: "🏆";
-    font-size: 2rem;
-    position: absolute;
-    top: -18px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--bg);
-    padding: 0 10px;
-  }
-  .certificate h2 { color: var(--orange); font-size: 18px; margin-top: 10px; margin-bottom: 5px; }
-  .certificate.gold h2 { color: #ffd700; }
-  .certificate.silver h2 { color: #c0c0c0; }
-  .certificate .subtitle { font-size: 12px; color: var(--neon); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
-  .certificate p { font-size: 13px; line-height: 1.4; color: var(--text); margin-bottom: 10px; text-align: left; }
-  .certificate .signature { margin-top: 15px; text-align: right; font-style: italic; color: var(--orange); font-size: 12px; }
-  .certificate.gold .signature { color: #ffd700; }
-  .certificate.silver .signature { color: #c0c0c0; }
-  
-  .fail-box {
-    border: 2px dashed var(--danger);
-    background: rgba(255, 0, 51, 0.05);
-    padding: 20px 15px;
-    max-width: 500px;
-    width: 100%;
-    border-radius: 8px;
-    margin-bottom: 15px;
-  }
-  .fail-box h2 { color: var(--danger); font-size: 20px; margin-bottom: 10px; }
-  .fail-box p { font-size: 13px; line-height: 1.4; color: #ddd; margin-bottom: 10px; }
-  .fail-box .highlight { color: var(--danger); font-weight: bold; text-transform: uppercase; }
-
-  /* Модалка */
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.9);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 100;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s;
-    padding: 20px;
-  }
-  .modal-overlay.active { opacity: 1; pointer-events: auto; }
-  .modal-content {
-    background: #111;
-    border: 2px solid var(--danger);
-    padding: 20px 15px;
-    text-align: center;
-    max-width: 350px;
-    width: 100%;
-    box-shadow: 0 0 20px var(--danger);
-    transform: translateY(20px);
-    transition: transform 0.3s;
-    border-radius: 8px;
-  }
-  .modal-overlay.active .modal-content { transform: translateY(0); }
-  .modal-content h3 { color: var(--danger); font-size: 18px; margin-bottom: 10px; }
-  .modal-content p { color: var(--text); font-size: 13px; line-height: 1.3; }
-
+  /* Футер */
   .credits {
     position: absolute;
-    bottom: 5px;
+    bottom: 2px;
     font-size: 10px;
     color: var(--muted);
     width: 100%;
     text-align: center;
   }
+
+  /* Остальные экраны (Титул, Теория, Результаты) */
+  h1 { font-size: 24px; color: var(--neon); margin-bottom: 10px; }
+  h2 { font-size: 20px; color: var(--white); margin-bottom: 10px; }
+  h3 { font-size: 16px; color: var(--orange); margin-bottom: 10px; }
+  p { font-size: 13px; line-height: 1.4; margin-bottom: 10px; color: #dddddd; }
+
+  .btn {
+    background: transparent;
+    border: 2px solid var(--neon);
+    color: var(--neon);
+    padding: 12px 20px;
+    font-family: var(--font-head);
+    font-size: 16px;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 0 10px var(--neon-dim);
+    transition: all 0.1s ease;
+    width: 100%;
+    max-width: 400px;
+    margin: 6px 0;
+  }
+  .btn:active {
+    transform: scale(0.96) translateY(2px);
+    background: rgba(57, 255, 20, 0.1);
+  }
+  .btn.orange {
+    border-color: var(--orange);
+    color: var(--orange);
+    box-shadow: 0 0 10px var(--orange-dim);
+  }
+  .btn.orange:active { background: rgba(255, 102, 0, 0.1); }
+
+  #screen-boot { justify-content: flex-start; padding-top: 15vh; text-align: left; align-items: flex-start; }
+  .boot-text { font-size: 14px; color: var(--neon); min-height: 1.5em; margin-bottom: 8px; }
+  .boot-text.danger { color: var(--danger); }
+  .boot-btn-wrapper { margin-top: 30px; opacity: 0; transition: opacity 0.5s; width: 100%; display: flex; justify-content: center; }
+  .boot-btn-wrapper.show { opacity: 1; }
+
+  .class-buttons { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 400px; margin-top: 15px; }
+
+  .card-container { width: 100%; max-width: 500px; height: 200px; position: relative; margin: 15px 0; }
+  .card {
+    position: absolute; inset: 0; background: #111; border: 2px solid var(--orange);
+    padding: 15px; display: flex; flex-direction: column; justify-content: center;
+    opacity: 0; transform: translateX(50px); transition: all 0.3s ease; pointer-events: none; border-radius: 8px;
+  }
+  .card.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+  .card h3 { font-size: 18px; text-align: center; }
+  .card p { color: var(--text); margin-bottom: 0; font-size: 13px; text-align: center; }
+  
+  .nav-controls { display: flex; gap: 12px; width: 100%; max-width: 500px; margin-bottom: 12px; }
+  .nav-controls .btn { margin: 0; padding: 10px; font-size: 14px; }
+
+  #screen-result { justify-content: center; padding: 15px; }
+  .certificate {
+    border: 3px double var(--orange); background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
+    padding: 20px 15px; max-width: 500px; width: 100%; border-radius: 8px;
+    position: relative; margin-bottom: 15px;
+  }
+  .certificate.gold { border-color: #ffd700; }
+  .certificate::before { content: "🏆"; font-size: 2rem; position: absolute; top: -18px; left: 50%; transform: translateX(-50%); background: var(--bg); padding: 0 10px; }
+  .certificate h2 { color: var(--orange); font-size: 18px; margin-top: 10px; margin-bottom: 5px; }
+  .certificate.gold h2 { color: #ffd700; }
+  .certificate .subtitle { font-size: 12px; color: var(--neon); margin-bottom: 15px; text-transform: uppercase; }
+  .certificate p { font-size: 13px; line-height: 1.4; color: var(--text); margin-bottom: 10px; text-align: left; }
+  .certificate .signature { margin-top: 15px; text-align: right; font-style: italic; color: var(--orange); font-size: 12px; }
+  
+  .fail-box { border: 2px dashed var(--danger); background: rgba(255, 0, 51, 0.05); padding: 20px 15px; max-width: 500px; width: 100%; border-radius: 8px; margin-bottom: 15px; }
+  .fail-box h2 { color: var(--danger); font-size: 20px; margin-bottom: 10px; }
+  .fail-box p { font-size: 13px; line-height: 1.4; color: #ddd; margin-bottom: 10px; }
+  .fail-box .highlight { color: var(--danger); font-weight: bold; }
+
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding: 20px; }
+  .modal-overlay.active { opacity: 1; pointer-events: auto; }
+  .modal-content { background: #111; border: 2px solid var(--danger); padding: 20px 15px; text-align: center; max-width: 350px; width: 100%; transform: translateY(20px); transition: transform 0.3s; border-radius: 8px; }
+  .modal-overlay.active .modal-content { transform: translateY(0); }
+  .modal-content h3 { color: var(--danger); font-size: 18px; margin-bottom: 10px; }
+  .modal-content p { color: var(--text); font-size: 13px; }
 </style>
 </head>
 <body>
@@ -429,26 +317,29 @@
   </div>
 
   <div id="screen-quiz" class="screen">
-    <div class="quiz-header">
-      <span id="quiz-progress">ВОПРОС 1/10</span>
-      <span>РЕЖИМ: ТРАССА</span>
-    </div>
-    
-    <div class="status-container" id="status-container">
-      <div class="status-title" id="status-title">СПЕРМАТОЗОИД ПАПЫ ДИМЫ</div>
-      <div class="status-sub" id="status-sub">До повышения: 1 ответ</div>
+    <div class="quiz-top">
+      <div class="quiz-header">
+        <span id="quiz-progress">ВОПРОС 1/10</span>
+        <span>РЕЖИМ: ТРАССА</span>
+      </div>
+      
+      <div class="status-container" id="status-container">
+        <div class="status-title" id="status-title">СПЕРМАТОЗОИД ПАПЫ ДИМЫ</div>
+        <div class="status-sub" id="status-sub">До повышения: 1 ответ</div>
+      </div>
+
+      <div class="meme-container" id="meme-container">
+        <img src="" id="meme-img" alt="Мем" loading="lazy">
+      </div>
+
+      <div class="question-text" id="quiz-question">Загрузка вопроса...</div>
     </div>
 
-    <div class="meme-container" id="meme-container">
-      <img src="" id="meme-img" alt="Мем" loading="lazy">
-    </div>
-
-    <div class="question-text" id="quiz-question">Загрузка вопроса...</div>
     <div class="answers" id="quiz-answers"></div>
   </div>
 
   <div id="screen-result" class="screen">
-    <div class="certificate" id="certificate-box" style="display: none;">
+    <div class="certificate gold" id="certificate-box" style="display: none;">
       <h2 id="cert-title">ТОРЖЕСТВЕННАЯ ГРАМОТА</h2>
       <div class="subtitle" id="cert-subtitle">Официальное усыновление / удочерение</div>
       <p>Настоящим документом подтверждается, что гражданин(ка) <strong id="cert-name">...</strong> успешно прошел(ла) все испытания дорогой, сдал(а) экзамен на знание таможенных конвенций и тахографа, и признан(а) достойным(ой) членом семьи.</p>
@@ -525,6 +416,7 @@
     currentCorrectIndex: -1
   };
 
+  // Прогресс бар: 0 -> 1 -> 2 -> 3 -> 4
   const statusNames = [
     "СПЕРМАТОЗОИД ПАПЫ ДИМЫ",
     "ГОЛОВАСТИК В КУЗОВЕ",
@@ -614,6 +506,7 @@
     const titleEl = document.getElementById('status-title');
     const containerEl = document.getElementById('status-container');
     
+    // Пульсация при смене статуса
     if (titleEl.innerText !== currentStatus) {
       titleEl.innerText = currentStatus;
       containerEl.classList.remove('pulse');
@@ -621,6 +514,7 @@
       containerEl.classList.add('pulse');
     }
 
+    // Текст прогресса (до следующего уровня 1, 2, 3)
     if (stage < 4) {
       let left = 4 - state.rep;
       document.getElementById('status-sub').innerText = `До повышения осталось: ${left}`;
@@ -641,6 +535,7 @@
     img.src = q.meme;
     imgContainer.style.display = 'block';
     
+    // Если картинка битая, скрываем контейнер
     img.onerror = () => {
       imgContainer.style.display = 'none';
     };
@@ -722,9 +617,9 @@
     const certSubtitle = document.getElementById('cert-subtitle');
     const failBox = document.getElementById('fail-box');
     
+    // Если 10 из 10 - золотая грамота. Иначе - провал.
     if (state.rep === 10) {
       certBox.style.display = 'block';
-      certBox.className = 'certificate gold';
       failBox.style.display = 'none';
       
       certTitle.innerText = "ЗОЛОТАЯ ГРАМОТА";
@@ -733,20 +628,6 @@
       const role = state.gender === 'boy' ? 'РОДНЫМ СЫНОМ' : 'РОДНОЙ ДОЧЕРЬЮ';
       document.getElementById('cert-role').innerText = role;
       document.getElementById('cert-name').innerText = "Лучший студент ВГЛТУ";
-      
-      sfxSuccess();
-      vibrate('success');
-    } else if (state.rep >= 7) {
-      certBox.style.display = 'block';
-      certBox.className = 'certificate silver';
-      failBox.style.display = 'none';
-      
-      certTitle.innerText = "СЕРЕБРЯНАЯ ГРАМОТА";
-      certSubtitle.innerText = "Официальное усыновление / удочерение";
-      
-      const role = state.gender === 'boy' ? 'ПРИЕМНЫМ СЫНОМ' : 'ПРИЕМНОЙ ДОЧЕРЬЮ';
-      document.getElementById('cert-role').innerText = role;
-      document.getElementById('cert-name').innerText = "Студент ВГЛТУ";
       
       sfxSuccess();
       vibrate('success');
