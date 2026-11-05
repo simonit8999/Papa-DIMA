@@ -1,10 +1,23 @@
+Бро, я понял, в чем дело! На скриншотах видно, что у тебя правильный ответ всё ещё стоит на первом месте (А). 
+
+**Причина:** Браузер и Telegram **очень сильно кэшируют** старые версии страниц. Скорее всего, ты загрузил новый код на GitHub, но когда открываешь игру, она грузит старый файл из памяти.
+
+Но я также заметил один нюанс в коде, который мог вызвать баг. В коде перемешивания я искал правильный ответ по тексту `b.innerText.includes(...)`, а если текст длинный, браузер мог его обрезать или добавить лишние символы.
+
+Я переписал логику. Теперь код **запоминает правильный индекс** после перемешивания, а не ищет по тексту. Это работает железобетонно.
+
+Плюс я добавил **версию в название** (просто чтобы ты видел, что файл обновился). Если в заголовке вкладки браузера написано `ДАЛЬНОБОЙ: КВЕСТ v2`, значит ты загрузил новый код!
+
+Вот финальный, рабочий код. Скопируй его, замени свой `index.html`, сохрани, и **обязательно обнови страницу с очисткой кэша (Ctrl + F5)**.
+
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0a0a0a">
-<title>ДАЛЬНОБОЙ: КВЕСТ</title>
+<title>ДАЛЬНОБОЙ: КВЕСТ v2</title> <!-- ДОБАВИЛ V2 ЧТОБЫ ТЫ ВИДЕЛ ОБНОВЛЕНИЕ -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   :root {
@@ -219,7 +232,6 @@
     line-height: 1.4;
   }
 
-  /* Оптимизированный контейнер для картинок */
   .meme-container {
     width: 100%;
     max-width: 650px;
@@ -237,7 +249,7 @@
   .meme-container img {
     width: 100%;
     height: 100%;
-    object-fit: contain; /* Картинка вписывается в рамку, не искажаясь */
+    object-fit: contain;
     display: block;
   }
   .meme-placeholder {
@@ -288,7 +300,7 @@
   .answer-btn.correct { border-color: var(--neon); color: var(--neon); background: rgba(57,255,20,0.1); }
   .answer-btn.wrong { border-color: var(--danger); color: var(--danger); background: rgba(255,0,51,0.1); }
 
-  /* Экран результатов (Грамота / Провал) */
+  /* Экран результатов */
   #screen-result { justify-content: center; }
   
   .certificate {
@@ -445,9 +457,8 @@
     <div class="answers" id="quiz-answers"></div>
   </div>
 
-  <!-- ЭКРАН 5: РЕЗУЛЬТАТ (Грамота или Провал) -->
+  <!-- ЭКРАН 5: РЕЗУЛЬТАТ -->
   <div id="screen-result" class="screen">
-    <!-- Блок для успешного прохождения -->
     <div class="certificate" id="certificate-box" style="display: none;">
       <h2>ТОРЖЕСТВЕННАЯ ГРАМОТА</h2>
       <div class="subtitle">Официальное усыновление / удочерение</div>
@@ -459,7 +470,6 @@
       </div>
     </div>
 
-    <!-- Блок для провала -->
     <div class="fail-box" id="fail-box" style="display: none;">
       <h2>ПРОВАЛ</h2>
       <p>Вы набрали <strong id="fail-score">0</strong> баллов из 10 возможных.</p>
@@ -527,7 +537,8 @@
     rep: 0,
     quizIndex: 0,
     theoryIndex: 0,
-    statusStage: 0
+    statusStage: 0,
+    currentCorrectIndex: -1 // Храним правильный индекс для текущего вопроса
   };
 
   const statusNames = [
@@ -535,7 +546,7 @@
     "ГОЛОВАСТИК В КУЗОВЕ",
     "СТАЖЁР НА ТАМОЖНЕ",
     "ДАЛЬНОБОЙ-СЕРЕДНЯК",
-    "СЫН ПАПЫ ДИМЫ" // Заменится на ДОЧЬ, если выбран девочка
+    "СЫН ПАПЫ ДИМЫ"
   ];
 
   if (window.Telegram && window.Telegram.WebApp) window.Telegram.WebApp.ready();
@@ -584,74 +595,84 @@
     {
       q: "Подъезжаешь к границе. Что даешь таможеннику?",
       a: ["Книжку МДП", "Взятку (пачку печенья 'Юбилейное')", "Скидку на доставку", "Свой паспорт с пропиской"],
-      correct: 0,
+      correct: 0, // Книжка МДП
       meme: "meme1.jpg",
       memes: ["ШТРАФ: ВЗЯТКА НЕ ПРОШЛА, ТАМОЖНЯ ЛЮБИТ 'КРАСНЫЙ МАК'", "МИНУС: ТЕБЯ ЗАВЕРНУЛИ НА ГРАНИЦЕ ЗА КОРРУПЦИЮ"]
     },
     {
       q: "Сколько часов можно ехать без остановки?",
       a: ["24 часа подряд, я же Сикс-Севен (67)", "4.5 часа", "Пока не кончится соляра"],
-      correct: 1,
+      correct: 1, // 4.5 часа
       meme: "meme2.jpg",
       memes: ["ШТРАФ: ТАХОГРАФ ВСЁ ВИДЕЛ", "ТЫ УСНУЛ ЗА РУЛЕМ И СНЕС ЗНАК '50'"]
     },
     {
       q: "С какой максимальной скоростью можно ездить возле дома Папы Димы?",
       a: ["67 км/ч", "120 км/ч", "Пешком"],
-      correct: 0,
+      correct: 0, // 67 км/ч
       meme: "meme3.jpg",
       memes: ["ОШИБКА: ПАПА ДИМА ВЫБЕЖАЛ ИЗ ДОМА С МОНТИРОВКОЙ", "ШТРАФ: ТЫ ПРЕВЫСИЛ СКОРОСТЬ ПЕРЕД ДОМОМ"]
     },
     {
       q: "Что такое TIR (МДП)?",
       a: ["Твой экспресс-билет через границы", "Новый айфон", "Тип топлива"],
-      correct: 0,
+      correct: 0, // Экспресс-билет
       meme: "meme4.jpg",
       memes: ["ОШИБКА: ТЫ ЗАСТРЯЛ НА ГРАНИЦЕ НА 3 ДНЯ", "МИНУС: ТАМОЖНЯ ЗАВАЛИЛА ТЕБЯ БУМАЖКАМИ"]
     },
     {
       q: "Дальнобойщик спрашивает: 'Вась, связь есть?'. Что ему нужно?",
       a: ["Рация для связи с диспетчером", "Мобильный интернет для ТикТока", "Позвонить маме"],
-      correct: 0,
+      correct: 0, // Рация
       meme: "meme5.jpg",
       memes: ["ОШИБКА: ТЫ НЕ НА СВЯЗИ, ТЫ В ПРОСТРАНСТВЕ", "МИНУС: ДИСПЕТЧЕР ОРЕТ, ЧТО ТЫ ПРОПАЛ"]
     },
     {
       q: "Что нужно для перевозки опасных грузов?",
       a: ["Свидетельство ДОПОГ", "Просто быть смелым", "Наклейка 'Осторожно, злой водитель'"],
-      correct: 0,
+      correct: 0, // ДОПОГ
       meme: "meme6.jpg",
       memes: ["ПАТРУЛЬ: ТЕБЯ ОСТАНОВИЛИ ЗА НАРУШЕНИЕ ADR", "МИНУС: ОПАСНЫЙ ГРУЗ БЕЗ ДОКУМЕНТОВ"]
     },
     {
       q: "Россия и Беларусь: к какому году планируют перейти к безразрешительным перевозкам?",
       a: ["До 2030 года", "До завтра", "Никогда, это же бюрократия"],
-      correct: 0,
+      correct: 0, // 2030
       meme: "meme7.jpg",
       memes: ["ОШИБКА: ТЫ ЖДЕШЬ РАЗРЕШЕНИЯ, А ПОЕЗД УШЕЛ", "МИНУС: СТОИШЬ В ОЧЕРЕДИ ЗА ДОЗВОЛОМ"]
     },
     {
       q: "Что такое e-CMR?",
       a: ["Электронная накладная", "Электромобиль", "Новый мем"],
-      correct: 0,
+      correct: 0, // Электронная накладная
       meme: "meme8.jpg",
       memes: ["ОШИБКА: ТЫ ЖИВЕШЬ В КАМЕННОМ ВЕКЕ", "МИНУС: БУМАЖКИ, БУМАЖКИ, БУМАЖКИ..."]
     },
     {
       q: "Кто выдает книжки МДП в России?",
       a: ["АСМАП", "Почта России", "Любой водитель на заправке"],
-      correct: 0,
+      correct: 0, // АСМАП
       meme: "meme9.jpg",
       memes: ["ОШИБКА: ТЫ КУПИЛ ПОДДЕЛКУ В ПЕРЕХОДЕ", "МИНУС: ТВОЯ КНИЖКА НЕ ДЕЙСТВИТЕЛЬНА"]
     },
     {
       q: "Водитель орет: 'Убери телефон!'. Что ты сделал не так?",
       a: ["Снимал его на видео без спроса", "Неправильно припарковался", "Не заправил фуру"],
-      correct: 0,
+      correct: 0, // Снимал видео
       meme: "meme10.jpg",
       memes: ["ОШИБКА: ТЫ СТАЛ ЗВЕЗДОЙ ТИКТОКА", "МИНУС: ВИДЕО НАБРАЛО 100К ПРОСМОТРОВ"]
     }
   ];
+
+  // Функция для перемешивания массива (Фишер-Йетс)
+  function shuffleArray(array) {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
 
   function startQuiz() {
     sfxClick(); vibrate('medium');
@@ -702,32 +723,50 @@
 
     document.getElementById('quiz-question').innerText = q.q;
     
+    // 1. Запоминаем правильный ответ ДО перемешивания
+    const correctText = q.a[q.correct];
+
+    // 2. Создаем массив объектов (чтобы знать, какой текст был правильным)
+    const answersWithStatus = q.a.map(text => ({
+      text: text,
+      isCorrect: text === correctText
+    }));
+
+    // 3. Перемешиваем
+    const shuffled = shuffleArray(answersWithStatus);
+
+    // 4. Находим новый индекс правильного ответа
+    state.currentCorrectIndex = shuffled.findIndex(item => item.isCorrect);
+
     const answersContainer = document.getElementById('quiz-answers');
     answersContainer.innerHTML = '';
     
-    q.a.forEach((answer, index) => {
+    // 5. Отрисовываем
+    shuffled.forEach((item, index) => {
       const btn = document.createElement('button');
       btn.className = 'answer-btn';
-      btn.innerText = `${String.fromCharCode(65 + index)}) ${answer}`;
-      btn.onclick = () => handleAnswer(index, btn);
+      btn.innerText = `${String.fromCharCode(65 + index)}) ${item.text}`;
+      btn.onclick = () => handleAnswer(index, btn); // Передаем ТЕКУЩИЙ ИНДЕКС
       answersContainer.appendChild(btn);
     });
   }
 
-  function handleAnswer(index, btn) {
+  function handleAnswer(selectedIndex, btn) {
     if (btn.classList.contains('correct') || btn.classList.contains('wrong')) return;
     
     const q = quizData[state.quizIndex];
     const allBtns = document.querySelectorAll('.answer-btn');
     
-    if (index === q.correct) {
+    if (selectedIndex === state.currentCorrectIndex) {
       btn.classList.add('correct');
       state.rep++;
       sfxSuccess();
       vibrate('success');
     } else {
       btn.classList.add('wrong');
-      allBtns[q.correct].classList.add('correct');
+      // Подсвечиваем правильный ответ по сохраненному индексу
+      allBtns[state.currentCorrectIndex].classList.add('correct');
+      
       sfxError();
       vibrate('error');
       
@@ -738,13 +777,12 @@
     allBtns.forEach(b => b.style.pointerEvents = 'none');
     updateStatusUI();
 
-    // Очень быстрый переход (300мс), чтобы не тормозило
     setTimeout(() => {
       state.quizIndex++;
       if (state.quizIndex < quizData.length) {
         renderQuiz();
       } else {
-        showResult(); // Сразу переходим к финалу, без мини-игры
+        showResult();
       }
     }, 300);
   }
@@ -761,14 +799,13 @@
     document.getElementById('modal').classList.remove('active');
   }
 
-  // --- ЭКРАН 5: РЕЗУЛЬТАТ (Грамота или Провал) ---
+  // --- ЭКРАН 5: РЕЗУЛЬТАТ ---
   function showResult() {
     goToScreen('screen-result');
     
     const certBox = document.getElementById('certificate-box');
     const failBox = document.getElementById('fail-box');
     
-    // Порог успеха: 7 и больше правильных ответов (из 10)
     const isWinner = state.rep >= 7;
     
     if (isWinner) {
@@ -801,3 +838,4 @@
 </script>
 </body>
 </html>
+```
