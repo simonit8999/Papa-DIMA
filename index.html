@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0a0a0a">
-<title>ДАЛЬНОБОЙ: КВЕСТ v5</title>
+<title>ДАЛЬНОБОЙ: КВЕСТ v6</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   :root {
@@ -197,6 +197,7 @@
     padding-bottom: 12px;
   }
   
+  /* Обновленная плашка статуса */
   .status-container {
     width: 100%;
     max-width: 650px;
@@ -206,12 +207,22 @@
     padding: 16px;
     border-left: 4px solid var(--orange);
     border-radius: 4px;
+    transition: all 0.3s ease;
+  }
+  .status-container.pulse {
+    animation: statusPulse 0.5s ease;
+  }
+  @keyframes statusPulse {
+    0% { box-shadow: 0 0 0 rgba(255, 102, 0, 0); }
+    50% { box-shadow: 0 0 20px var(--orange); background: #1a1a1a; }
+    100% { box-shadow: 0 0 0 rgba(255, 102, 0, 0); }
   }
   .status-title {
     font-family: var(--font-head);
     color: var(--orange);
     font-size: 1.4rem;
     margin-bottom: 8px;
+    transition: color 0.3s;
   }
   .status-sub {
     font-size: 1rem;
@@ -219,33 +230,23 @@
     line-height: 1.4;
   }
 
-  /* Контейнер для картинок 3:2 */
+  /* Контейнер для картинок */
   .meme-container {
     width: 100%;
     max-width: 600px;
-    aspect-ratio: 3 / 2; /* Идеальные пропорции под 1200x800 */
-    border: 2px solid #333;
-    border-radius: 8px;
+    height: 250px; /* Фиксированная высота */
+    border-radius: 12px; /* Скругленные углы */
     margin-bottom: 20px;
     position: relative;
     overflow: hidden;
     background: #000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    /* Если картинки нет - контейнер скроется через JS */
   }
   .meme-container img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Картинка заполняет всё пространство */
+    object-fit: cover; /* Красиво заполняет блок без искажений */
     display: block;
-  }
-  .meme-placeholder {
-    color: var(--muted);
-    font-size: 1rem;
-    font-style: italic;
-    text-align: center;
-    position: absolute;
   }
 
   .question-text {
@@ -435,14 +436,13 @@
       <span>РЕЖИМ: ТРАССА</span>
     </div>
     
-    <div class="status-container">
+    <div class="status-container" id="status-container">
       <div class="status-title" id="status-title">СПЕРМАТОЗОИД ПАПЫ ДИМЫ</div>
-      <div class="status-sub" id="status-sub">До повышения осталось правильных ответов: 3</div>
+      <div class="status-sub" id="status-sub">До повышения осталось правильных ответов: 1</div>
     </div>
 
-    <div class="meme-container" id="meme-box">
-      <div class="meme-placeholder" id="meme-placeholder">[МЕСТО ДЛЯ МЕМА]</div>
-      <img src="" id="meme-img" alt="Мем" style="display: none;" onerror="this.style.display='none'; document.getElementById('meme-placeholder').style.display='block';">
+    <div class="meme-container" id="meme-container">
+      <img src="" id="meme-img" alt="Мем" loading="lazy">
     </div>
 
     <div class="question-text" id="quiz-question">Загрузка вопроса...</div>
@@ -450,7 +450,6 @@
   </div>
 
   <div id="screen-result" class="screen">
-    <!-- Грамота -->
     <div class="certificate" id="certificate-box" style="display: none;">
       <h2 id="cert-title">ТОРЖЕСТВЕННАЯ ГРАМОТА</h2>
       <div class="subtitle" id="cert-subtitle">Официальное усыновление / удочерение</div>
@@ -462,7 +461,6 @@
       </div>
     </div>
 
-    <!-- Провал -->
     <div class="fail-box" id="fail-box" style="display: none;">
       <h2>ПРОВАЛ</h2>
       <p>Вы набрали <strong id="fail-score">0</strong> баллов из 10 возможных.</p>
@@ -526,16 +524,16 @@
     rep: 0,
     quizIndex: 0,
     theoryIndex: 0,
-    statusStage: 0,
     currentCorrectIndex: -1
   };
 
+  // Статусы привязаны к каждому правильному ответу
   const statusNames = [
-    "СПЕРМАТОЗОИД ПАПЫ ДИМЫ",
-    "ГОЛОВАСТИК В КУЗОВЕ",
-    "СТАЖЁР НА ТАМОЖНЕ",
-    "ДАЛЬНОБОЙ-СЕРЕДНЯК",
-    "СЫН ПАПЫ ДИМЫ"
+    "СПЕРМАТОЗОИД ПАПЫ ДИМЫ",       // 0 правильных
+    "ГОЛОВАСТИК В КУЗОВЕ",          // 1 правильный
+    "СТАЖЁР НА ТАМОЖНЕ",            // 2 правильных
+    "ДАЛЬНОБОЙ-СЕРЕДНЯК",           // 3 правильных
+    "СЫН ПАПЫ ДИМЫ"                 // 4+ правильных
   ];
 
   if (window.Telegram && window.Telegram.WebApp) window.Telegram.WebApp.ready();
@@ -603,25 +601,35 @@
     sfxClick(); vibrate('medium');
     state.quizIndex = 0;
     state.rep = 0;
-    state.statusStage = 0;
     goToScreen('screen-quiz');
     renderQuiz();
   }
 
+  // Логика смены статуса
   function updateStatusUI() {
-    state.statusStage = Math.floor(state.rep / 3);
-    if (state.statusStage > 4) state.statusStage = 4;
+    // Определяем уровень (каждый правильный ответ = +1 уровень, макс 4)
+    let stage = state.rep;
+    if (stage > 4) stage = 4;
     
-    let currentStatus = statusNames[state.statusStage];
-    if (state.gender === 'girl' && state.statusStage === 4) {
+    let currentStatus = statusNames[stage];
+    if (state.gender === 'girl' && stage === 4) {
        currentStatus = "ДОЧЬ ПАПЫ ДИМЫ";
     }
 
-    document.getElementById('status-title').innerText = currentStatus;
+    const titleEl = document.getElementById('status-title');
+    const containerEl = document.getElementById('status-container');
     
-    if (state.statusStage < 4) {
-      let nextLevelRep = (state.statusStage + 1) * 3;
-      let left = nextLevelRep - state.rep;
+    // Если статус изменился, запускаем пульсацию
+    if (titleEl.innerText !== currentStatus) {
+      titleEl.innerText = currentStatus;
+      containerEl.classList.remove('pulse');
+      void containerEl.offsetWidth; // Триггер перерисовки
+      containerEl.classList.add('pulse');
+    }
+
+    // Обновляем текст прогресса
+    if (stage < 4) {
+      let left = 4 - state.rep;
       document.getElementById('status-sub').innerText = `До повышения осталось правильных ответов: ${left}`;
     } else {
       document.getElementById('status-sub').innerText = `Максимальный уровень достигнут!`;
@@ -631,25 +639,25 @@
   function renderQuiz() {
     const q = quizData[state.quizIndex];
     document.getElementById('quiz-progress').innerText = `ВОПРОС ${state.quizIndex + 1}/${quizData.length}`;
+    
+    // Обновляем статус ДО начала показа вопроса
     updateStatusUI();
     
+    // Работа с картинкой
+    const imgContainer = document.getElementById('meme-container');
     const img = document.getElementById('meme-img');
-    const placeholder = document.getElementById('meme-placeholder');
     
     img.src = q.meme;
-    img.style.display = 'block';
-    placeholder.style.display = 'none';
+    imgContainer.style.display = 'block'; // Показываем контейнер
     
+    // Если картинка битая или её нет, полностью скрываем контейнер
     img.onerror = () => {
-      img.style.display = 'none';
-      placeholder.style.display = 'block';
-      placeholder.innerText = "[МЕМ НЕ ЗАГРУЖЕН]";
+      imgContainer.style.display = 'none';
     };
 
     document.getElementById('quiz-question').innerText = q.q;
     
     const correctText = q.a[q.correct];
-
     const answersWithStatus = q.a.map(text => ({
       text: text,
       isCorrect: text === correctText
@@ -681,6 +689,7 @@
       state.rep++;
       sfxSuccess();
       vibrate('success');
+      updateStatusUI(); // Сразу обновляем статус при правильном ответе
     } else {
       btn.classList.add('wrong');
       allBtns[state.currentCorrectIndex].classList.add('correct');
@@ -693,7 +702,6 @@
     }
 
     allBtns.forEach(b => b.style.pointerEvents = 'none');
-    updateStatusUI();
 
     setTimeout(() => {
       state.quizIndex++;
@@ -702,7 +710,7 @@
       } else {
         showResult();
       }
-    }, 400); // Чуть увеличил задержку, чтобы юзер успел увидеть правильный ответ
+    }, 500); 
   }
 
   function showModal(title, text) {
