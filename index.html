@@ -14,7 +14,7 @@
     --orange: #ff6600;
     --orange-dim: rgba(255, 102, 0, 0.3);
     --text: #ffffff;
-    --muted: #888888;
+    --muted: #aaaaaa;
     --danger: #ff0033;
     --font-head: 'Impact', 'Arial Black', sans-serif;
     --font-mono: 'Courier New', Courier, monospace;
@@ -37,12 +37,11 @@
   #app {
     position: relative;
     width: 100vw;
-    height: 100vh; /* Fallback */
+    height: 100vh;
     height: 100dvh;
     overflow: hidden;
   }
 
-  /* Экраны */
   .screen {
     position: absolute;
     inset: 0;
@@ -64,22 +63,20 @@
     transform: translateY(0);
   }
 
-  /* Заголовки */
   h1, h2, h3 {
     font-family: var(--font-head);
     text-transform: uppercase;
     letter-spacing: 1px;
-    line-height: 1.1;
+    line-height: 1.2;
     text-shadow: 0 0 10px var(--neon-dim);
   }
 
   h1 { font-size: clamp(2rem, 8vw, 3.5rem); color: var(--neon); }
   h2 { font-size: clamp(1.5rem, 6vw, 2.5rem); color: var(--white); margin-bottom: 16px; }
-  h3 { font-size: 1.2rem; color: var(--orange); margin-bottom: 8px; }
+  h3 { font-size: 1.5rem; color: var(--orange); margin-bottom: 16px; }
 
-  p { font-size: 1rem; line-height: 1.5; margin-bottom: 16px; color: #cccccc; }
+  p { font-size: 1.1rem; line-height: 1.6; margin-bottom: 16px; color: #dddddd; }
 
-  /* Кнопки */
   .btn {
     background: transparent;
     border: 2px solid var(--neon);
@@ -92,9 +89,8 @@
     box-shadow: 0 0 10px var(--neon-dim), inset 0 0 10px var(--neon-dim);
     transition: all 0.1s ease;
     width: 100%;
-    max-width: 400px;
+    max-width: 450px;
     margin: 8px 0;
-    position: relative;
   }
   .btn:active {
     transform: scale(0.96) translateY(2px);
@@ -111,7 +107,7 @@
     background: rgba(255, 102, 0, 0.1);
   }
 
-  /* Экран 0: Boot */
+  /* Экран 0 */
   #screen-boot {
     justify-content: flex-start;
     padding-top: 20vh;
@@ -119,10 +115,10 @@
     align-items: flex-start;
   }
   .boot-text {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     color: var(--neon);
     min-height: 1.5em;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
   }
   .boot-text.danger { color: var(--danger); text-shadow: 0 0 10px var(--danger); }
   .boot-btn-wrapper {
@@ -135,21 +131,21 @@
   }
   .boot-btn-wrapper.show { opacity: 1; }
 
-  /* Экран 1: Класс */
+  /* Экран 1 */
   .class-buttons {
     display: flex;
     flex-direction: column;
     gap: 16px;
     width: 100%;
-    max-width: 400px;
+    max-width: 450px;
     margin-top: 24px;
   }
 
   /* Экран 2: Карточки */
   .card-container {
     width: 100%;
-    max-width: 500px;
-    height: 300px;
+    max-width: 600px;
+    height: 340px;
     position: relative;
     margin: 24px 0;
     perspective: 1000px;
@@ -160,7 +156,7 @@
     background: #111;
     border: 2px solid var(--orange);
     box-shadow: 0 0 15px var(--orange-dim);
-    padding: 24px;
+    padding: 32px 24px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -168,75 +164,139 @@
     transform: translateX(50px);
     transition: all 0.3s ease;
     pointer-events: none;
+    border-radius: 8px;
   }
   .card.active {
     opacity: 1;
     transform: translateX(0);
     pointer-events: auto;
   }
-  .card h3 { color: var(--neon); font-size: 1.5rem; }
-  .card p { color: var(--text); margin-bottom: 0; font-size: 1rem; }
+  .card h3 { font-size: 1.6rem; text-align: center; }
+  .card p { color: var(--text); margin-bottom: 0; font-size: 1.1rem; line-height: 1.6; text-align: center; }
   
   .nav-controls {
     display: flex;
     gap: 16px;
     width: 100%;
-    max-width: 500px;
+    max-width: 600px;
     margin-bottom: 16px;
   }
-  .nav-controls .btn { margin: 0; padding: 12px; font-size: 1rem; }
+  .nav-controls .btn { margin: 0; padding: 14px; font-size: 1rem; }
 
   /* Экран 3: Викторина */
-  #screen-quiz { justify-content: flex-start; padding-top: 40px; }
+  #screen-quiz { justify-content: flex-start; padding-top: 20px; }
   .quiz-header {
     display: flex;
     justify-content: space-between;
     width: 100%;
-    max-width: 500px;
-    margin-bottom: 24px;
-    font-size: 1rem;
+    max-width: 650px;
+    margin-bottom: 16px;
+    font-size: 1.1rem;
     color: var(--neon);
-    border-bottom: 1px solid var(--neon-dim);
-    padding-bottom: 8px;
+    border-bottom: 2px solid var(--neon-dim);
+    padding-bottom: 12px;
   }
+  
+  .status-container {
+    width: 100%;
+    max-width: 650px;
+    margin-bottom: 20px;
+    text-align: left;
+    background: #111;
+    padding: 16px;
+    border-left: 4px solid var(--orange);
+    border-radius: 4px;
+  }
+  .status-title {
+    font-family: var(--font-head);
+    color: var(--orange);
+    font-size: 1.4rem;
+    margin-bottom: 8px;
+  }
+  .status-sub {
+    font-size: 1rem;
+    color: var(--text);
+    line-height: 1.4;
+  }
+
+  .meme-container {
+    width: 100%;
+    max-width: 650px;
+    height: 200px;
+    background: #151515;
+    border: 2px solid #333;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+  }
+  .meme-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Изменено на contain, чтобы мемы не обрезались */
+    display: block;
+    background: #000;
+  }
+  .meme-placeholder {
+    color: var(--muted);
+    font-size: 1rem;
+    font-style: italic;
+    text-align: center;
+    padding: 0 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+  }
+
   .question-text {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
+    font-weight: bold;
     color: var(--text);
     margin-bottom: 24px;
-    min-height: 80px;
-    font-weight: bold;
+    line-height: 1.5;
+    text-align: left;
+    width: 100%;
+    max-width: 650px;
   }
   .answers {
     display: flex;
     flex-direction: column;
     gap: 12px;
     width: 100%;
-    max-width: 500px;
+    max-width: 650px;
+    margin-bottom: 30px;
   }
   .answer-btn {
     background: #111;
-    border: 1px solid var(--muted);
+    border: 2px solid #444;
     color: var(--text);
-    padding: 16px;
+    padding: 18px 20px;
     font-family: var(--font-mono);
-    font-size: 1rem;
+    font-size: 1.15rem;
     text-align: left;
     cursor: pointer;
     transition: all 0.2s;
+    border-radius: 6px;
+    line-height: 1.5;
   }
   .answer-btn:active { transform: scale(0.98); }
   .answer-btn.correct { border-color: var(--neon); color: var(--neon); background: rgba(57,255,20,0.1); }
   .answer-btn.wrong { border-color: var(--danger); color: var(--danger); background: rgba(255,0,51,0.1); }
 
-  /* Экран 4: Мини-игра */
+  /* Экран 4 */
   #screen-minigame { background: #050505; }
   .timer-bar-container {
     width: 100%;
     max-width: 300px;
-    height: 10px;
+    height: 12px;
     background: #333;
-    border-radius: 5px;
-    margin: 24px 0;
+    border-radius: 6px;
+    margin: 30px 0;
     overflow: hidden;
   }
   .timer-bar {
@@ -246,16 +306,16 @@
     transition: width 0.1s linear;
   }
   .mega-btn {
-    width: 200px;
-    height: 200px;
+    width: 240px;
+    height: 240px;
     border-radius: 50%;
     background: var(--danger);
-    border: 4px solid #fff;
+    border: 6px solid #fff;
     color: #fff;
     font-family: var(--font-head);
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     text-transform: uppercase;
-    box-shadow: 0 0 30px var(--danger);
+    box-shadow: 0 0 40px var(--danger);
     animation: pulse 1s infinite;
     cursor: pointer;
     display: grid;
@@ -266,16 +326,16 @@
   }
   .mega-btn:active { transform: scale(0.9); animation: none; }
   @keyframes pulse {
-    0% { transform: scale(1); box-shadow: 0 0 30px var(--danger); }
-    50% { transform: scale(1.05); box-shadow: 0 0 60px var(--danger); }
-    100% { transform: scale(1); box-shadow: 0 0 30px var(--danger); }
+    0% { transform: scale(1); box-shadow: 0 0 40px var(--danger); }
+    50% { transform: scale(1.05); box-shadow: 0 0 80px var(--danger); }
+    100% { transform: scale(1); box-shadow: 0 0 40px var(--danger); }
   }
 
   /* Модалка */
   .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.85);
+    background: rgba(0,0,0,0.9);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -291,42 +351,39 @@
     border: 2px solid var(--danger);
     padding: 32px 24px;
     text-align: center;
-    max-width: 400px;
+    max-width: 450px;
     width: 100%;
-    box-shadow: 0 0 20px var(--danger);
+    box-shadow: 0 0 30px var(--danger);
     transform: translateY(20px);
     transition: transform 0.3s;
+    border-radius: 8px;
   }
   .modal-overlay.active .modal-content { transform: translateY(0); }
-  .modal-content h3 { color: var(--danger); font-size: 1.5rem; margin-bottom: 16px; text-shadow: 0 0 10px var(--danger); }
-  .modal-content p { color: var(--text); }
+  .modal-content h3 { color: var(--danger); font-size: 1.8rem; margin-bottom: 16px; text-shadow: 0 0 15px var(--danger); }
+  .modal-content p { color: var(--text); font-size: 1.1rem; line-height: 1.5; }
 
   /* Финальный экран */
   #screen-result { justify-content: center; }
   .achievement-box {
     border: 2px dashed var(--neon);
-    padding: 24px;
+    padding: 32px 24px;
     background: rgba(57,255,20,0.05);
     margin-top: 24px;
-    max-width: 500px;
+    max-width: 550px;
     width: 100%;
+    border-radius: 8px;
   }
-  .achievement-box h2 { color: var(--neon); text-shadow: 0 0 15px var(--neon); margin-bottom: 16px; }
-  .achievement-box p { color: var(--text); margin-bottom: 0; }
+  .achievement-box h2 { color: var(--neon); text-shadow: 0 0 15px var(--neon); margin-bottom: 16px; font-size: 1.8rem; }
+  .achievement-box p { color: var(--text); margin-bottom: 0; font-size: 1.1rem; line-height: 1.5; }
   
   .credits {
     position: absolute;
     bottom: 10px;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     color: var(--muted);
     width: 100%;
     text-align: center;
   }
-
-  /* Скроллбар */
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--neon); }
 </style>
 </head>
 <body>
@@ -344,7 +401,7 @@
   <!-- ЭКРАН 1: ВЫБОР КЛАССА -->
   <div id="screen-class" class="screen">
     <h1>ВЫБЕРИ СВОЙ<br>СТАРТОВЫЙ КЛАСС</h1>
-    <p style="margin-top: 24px; max-width: 500px;">
+    <p style="margin-top: 24px; max-width: 550px;">
       Ты — Сперматозоид Папы Димы. Твоя цель — выжить на трассе и стать его Сыном (или Дочерью).<br>Выбери, кем ты родишься.
     </p>
     <div class="class-buttons">
@@ -356,7 +413,7 @@
   <!-- ЭКРАН 2: ТЕОРИЯ -->
   <div id="screen-theory" class="screen">
     <h2>БАЗА ЗНАНИЙ<br>(ШПАРГАЛКА)</h2>
-    <p style="font-size: 0.9rem;">Пролистай теорию. Тут всё, что нужно, чтобы не сойти с ума на таможне.</p>
+    <p style="font-size: 1.05rem;">Пролистай теорию. Тут всё, что нужно, чтобы не сойти с ума на таможне.</p>
     
     <div class="card-container" id="theory-container">
       <div class="card active">
@@ -388,16 +445,27 @@
   <div id="screen-quiz" class="screen">
     <div class="quiz-header">
       <span id="quiz-progress">ВОПРОС 1/10</span>
-      <span id="quiz-rep">РЕПУТАЦИЯ: 0</span>
+      <span>РЕЖИМ: ТРАССА</span>
     </div>
+    
+    <div class="status-container">
+      <div class="status-title" id="status-title">СПЕРМАТОЗОИД ПАПЫ ДИМЫ</div>
+      <div class="status-sub" id="status-sub">До повышения осталось правильных ответов: 3</div>
+    </div>
+
+    <div class="meme-container" id="meme-box">
+      <div class="meme-placeholder" id="meme-placeholder">[МЕСТО ДЛЯ МЕМА]</div>
+      <img src="" id="meme-img" alt="Мем" style="display: none;" onerror="this.style.display='none'; document.getElementById('meme-placeholder').style.display='block';">
+    </div>
+
     <div class="question-text" id="quiz-question">Загрузка вопроса...</div>
     <div class="answers" id="quiz-answers"></div>
   </div>
 
   <!-- ЭКРАН 4: МИНИ-ИГРА -->
   <div id="screen-minigame" class="screen">
-    <h2>СРОЧНО! ВОДИТЕЛЬ СНИМАЕТ ВИДЕО.</h2>
-    <p>Ты попал в кадр к дальнобойщику. Он орет: "Убери телефон!". Жми на кнопку, чтобы спастись!</p>
+    <h2>ВОДИТЕЛЬ СНИМАЕТ ВИДЕО!</h2>
+    <p style="font-size: 1.1rem;">Ты попал в кадр к злому водителю. Он орет: "Убери телефон!". Жми на кнопку, чтобы спастись!</p>
     
     <div class="timer-bar-container">
       <div class="timer-bar" id="timer-bar"></div>
@@ -429,10 +497,9 @@
 </div>
 
 <script>
-  // --- ЗВУКОВОЙ ДВИЖОК (Web Audio API) ---
+  // --- ЗВУКОВОЙ ДВИЖОК ---
   const AudioContext = window.AudioContext || window.webkitAudioContext;
   let audioCtx;
-  let isSoundEnabled = true;
 
   function initAudio() {
     if (!audioCtx) audioCtx = new AudioContext();
@@ -440,20 +507,15 @@
   }
 
   function playTone(frequency, type, duration, vol = 0.1) {
-    if (!isSoundEnabled) return;
-    initAudio();
+    if (!audioCtx) return;
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
-    
     osc.type = type;
     osc.frequency.setValueAtTime(frequency, audioCtx.currentTime);
-    
     gain.gain.setValueAtTime(vol, audioCtx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-    
     osc.connect(gain);
     gain.connect(audioCtx.destination);
-    
     osc.start();
     osc.stop(audioCtx.currentTime + duration);
   }
@@ -463,171 +525,199 @@
   function sfxError() { playTone(150, 'sawtooth', 0.3, 0.1); }
   function sfxType() { playTone(400, 'square', 0.02, 0.02); }
 
-  // --- HAPTIC FEEDBACK (Telegram) ---
+  // --- HAPTIC FEEDBACK ---
   function vibrate(type = 'light') {
     if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
-      if (type === 'light') window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
-      if (type === 'medium') window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
-      if (type === 'heavy') window.Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
-      if (type === 'error') window.Telegram.WebApp.HapticFeedback.notificationOccurred('error');
-      if (type === 'success') window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-    } else {
-      // Fallback для браузера
-      if (navigator.vibrate) {
-        if (type === 'light' || type === 'medium') navigator.vibrate(20);
-        if (type === 'heavy' || type === 'error') navigator.vibrate([50, 50, 50]);
-        if (type === 'success') navigator.vibrate([30, 50, 30]);
-      }
+      if (type === 'light' || type === 'medium') window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+      if (type === 'error' || type === 'success') window.Telegram.WebApp.HapticFeedback.notificationOccurred(type);
+    } else if (navigator.vibrate) {
+      navigator.vibrate(20);
     }
   }
 
-  // --- СОСТОЯНИЕ ИГРЫ ---
+  // --- СОСТОЯНИЕ ---
   const state = {
     gender: null,
-    reputation: 0,
+    rep: 0,
     quizIndex: 0,
     theoryIndex: 0,
-    minigamePassed: false
+    statusStage: 0
   };
 
-  // Инициализация Telegram WebApp
-  if (window.Telegram && window.Telegram.WebApp) {
-    window.Telegram.WebApp.ready();
-    window.Telegram.WebApp.expand();
-  }
-
-  // --- ЭКРАН 0: BOOT ---
-  const bootLines = [
-    "[СИСТЕМА ЗАГРУЖАЕТСЯ...]",
-    "[ПОДКЛЮЧЕНИЕ К ТАХОГРАФУ...]",
-    "[ОШИБКА: ОБНАРУЖЕН СТУДЕНТ]"
+  const statusNames = [
+    "СПЕРМАТОЗОИД ПАПЫ ДИМЫ",
+    "ГОЛОВАСТИК В КУЗОВЕ",
+    "СТАЖЁР НА ТАМОЖНЕ",
+    "ДАЛЬНОБОЙ-СЕРЕДНЯК",
+    "СЫН ПАПЫ ДИМЫ" // 4-й этап
   ];
 
+  if (window.Telegram && window.Telegram.WebApp) window.Telegram.WebApp.ready();
+
+  // --- ЭКРАН 0 ---
+  const bootLines = ["[СИСТЕМА ЗАГРУЖАЕТСЯ...]", "[ПОДКЛЮЧЕНИЕ К ТАХОГРАФУ...]", "[ОШИБКА: ОБНАРУЖЕН СТУДЕНТ]"];
   async function runBootSequence() {
     const container = document.getElementById('boot-lines');
-    
     for (let i = 0; i < bootLines.length; i++) {
       const el = document.createElement('div');
       el.className = 'boot-text' + (i === 2 ? ' danger' : '');
       container.appendChild(el);
-      
       const text = bootLines[i];
       for (let j = 0; j < text.length; j++) {
         el.innerText += text[j];
-        if (j % 3 === 0) sfxType(); // Звук печати
+        if (j % 3 === 0) sfxType();
         await new Promise(r => setTimeout(r, 30));
       }
       await new Promise(r => setTimeout(r, 400));
     }
-
-    // Показываем кнопку
     document.getElementById('boot-btn-wrapper').classList.add('show');
     sfxSuccess();
   }
 
-  // --- ЭКРАН 1: КЛАСС ---
-  function selectGender(gender) {
-    sfxClick();
-    vibrate('medium');
-    state.gender = gender;
-    goToScreen('screen-theory');
-  }
-
-  // --- УПРАВЛЕНИЕ ЭКРАНАМИ ---
+  // --- УПРАВЛЕНИЕ ---
   function goToScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
   }
 
-  // --- ЭКРАН 2: ТЕОРИЯ ---
-  function changeTheory(dir) {
-    sfxClick();
-    vibrate('light');
-    const cards = document.querySelectorAll('#theory-container .card');
-    state.theoryIndex = (state.theoryIndex + dir + cards.length) % cards.length;
-    
-    cards.forEach((c, i) => {
-      c.classList.toggle('active', i === state.theoryIndex);
-    });
+  function selectGender(g) {
+    sfxClick(); vibrate('medium');
+    state.gender = g;
+    goToScreen('screen-theory');
   }
 
-  // --- ЭКРАН 3: ВИКТОРИНА ---
+  function changeTheory(dir) {
+    sfxClick(); vibrate('light');
+    const cards = document.querySelectorAll('#theory-container .card');
+    state.theoryIndex = (state.theoryIndex + dir + cards.length) % cards.length;
+    cards.forEach((c, i) => c.classList.toggle('active', i === state.theoryIndex));
+  }
+
+  // --- ВИКТОРИНА ---
   const quizData = [
     {
       q: "Подъезжаешь к границе. Что даешь таможеннику?",
-      a: ["Книжку МДП", "Скидку на доставку", "Свой паспорт с пропиской"],
+      a: ["Книжку МДП", "Взятку (пачку печенья 'Юбилейное')", "Скидку на доставку", "Свой паспорт с пропиской"],
       correct: 0,
-      memes: ["ШТРАФ: ТАМОЖНЯ НЕ ОЦЕНИЛА ТВОЙ ЮМОР", "МИНУС РЕПУТАЦИЯ: ТЫ ВЫГЛЯДИШЬ КАК ТУРИСТ"]
+      meme: "meme1.jpg",
+      memes: ["ШТРАФ: ВЗЯТКА НЕ ПРОШЛА, ТАМОЖНЯ ЛЮБИТ 'КРАСНЫЙ МАК'", "МИНУС: ТЕБЯ ЗАВЕРНУЛИ НА ГРАНИЦЕ ЗА КОРРУПЦИЮ"]
     },
     {
       q: "Сколько часов можно ехать без остановки?",
-      a: ["24 часа подряд, я же Сикс-Севен", "4.5 часа", "Пока не кончится соляра"],
+      a: ["24 часа подряд, я же Сикс-Севен (67)", "4.5 часа", "Пока не кончится соляра"],
       correct: 1,
+      meme: "meme2.jpg",
       memes: ["ШТРАФ: ТАХОГРАФ ВСЁ ВИДЕЛ", "ТЫ УСНУЛ ЗА РУЛЕМ И СНЕС ЗНАК '50'"]
     },
     {
-      q: "Какая конвенция регулирует международные дорожные перевозки грузов?",
-      a: ["Конвенция CMR (КДПГ)", "Конвенция ООН по морскому праву", "Правила игры в Counter-Strike"],
+      q: "С какой максимальной скоростью можно ездить возле дома Папы Димы?",
+      a: ["67 км/ч", "120 км/ч", "Пешком"],
       correct: 0,
-      memes: ["МИМО: ТЫ ВЕЗЕШЬ ГРУЗ ПО ВОДЕ?", "МИНУС РЕПУТАЦИЯ: ТЫ ПРОПУСТИЛ ПАРУ ПО ТЕОРИИ"]
+      meme: "meme3.jpg",
+      memes: ["ОШИБКА: ПАПА ДИМА ВЫБЕЖАЛ ИЗ ДОМА С МОНТИРОВКОЙ", "ШТРАФ: ТЫ ПРЕВЫСИЛ СКОРОСТЬ ПЕРЕД ДОМОМ"]
     },
     {
       q: "Что такое TIR (МДП)?",
       a: ["Твой экспресс-билет через границы", "Новый айфон", "Тип топлива"],
       correct: 0,
-      memes: ["ОШИБКА: ТЫ ЗАСТРЯЛ НА ГРАНИЦЕ НА 3 ДНЯ", "МИНУС РЕПУТАЦИЯ: ТАМОЖНЯ ЗАВАЛИЛА ТЕБЯ БУМАЖКАМИ"]
+      meme: "meme4.jpg",
+      memes: ["ОШИБКА: ТЫ ЗАСТРЯЛ НА ГРАНИЦЕ НА 3 ДНЯ", "МИНУС: ТАМОЖНЯ ЗАВАЛИЛА ТЕБЯ БУМАЖКАМИ"]
     },
     {
-      q: "Сколько экземпляров накладной CMR нужно минимум?",
-      a: ["3 экземпляра", "1 экземпляр", "Столько, сколько влезет в бардачок"],
+      q: "Дальнобойщик спрашивает: 'Вась, связь есть?'. Что ему нужно?",
+      a: ["Рация для связи с диспетчером", "Мобильный интернет для ТикТока", "Позвонить маме"],
       correct: 0,
-      memes: ["ОШИБКА: ОТПРАВИТЕЛЬ НЕ ДОЖДАЛСЯ СВОЕЙ КОПИИ", "МИНУС РЕПУТАЦИЯ: ДОКУМЕНТЫ ПОТЕРЯНЫ"]
+      meme: "meme5.jpg",
+      memes: ["ОШИБКА: ТЫ НЕ НА СВЯЗИ, ТЫ В ПРОСТРАНСТВЕ", "МИНУС: ДИСПЕТЧЕР ОРЕТ, ЧТО ТЫ ПРОПАЛ"]
     },
     {
       q: "Что нужно для перевозки опасных грузов?",
       a: ["Свидетельство ДОПОГ", "Просто быть смелым", "Наклейка 'Осторожно, злой водитель'"],
       correct: 0,
-      memes: ["ПАТРУЛЬ: ТЕБЯ ОСТАНОВИЛИ ЗА НАРУШЕНИЕ ADR", "МИНУС РЕПУТАЦИЯ: ОПАСНЫЙ ГРУЗ БЕЗ ДОКУМЕНТОВ"]
+      meme: "meme6.jpg",
+      memes: ["ПАТРУЛЬ: ТЕБЯ ОСТАНОВИЛИ ЗА НАРУШЕНИЕ ADR", "МИНУС: ОПАСНЫЙ ГРУЗ БЕЗ ДОКУМЕНТОВ"]
     },
     {
-      q: "До какого года Россия и Беларусь планируют перейти к безразрешительным перевозкам?",
+      q: "Россия и Беларусь: к какому году планируют перейти к безразрешительным перевозкам?",
       a: ["До 2030 года", "До завтра", "Никогда, это же бюрократия"],
       correct: 0,
-      memes: ["ОШИБКА: ТЫ ЖДЕШЬ РАЗРЕШЕНИЯ, А ПОЕЗД УШЕЛ", "МИНУС РЕПУТАЦИЯ: СТОИШЬ В ОЧЕРЕДИ ЗА ДОЗВОЛОМ"]
+      meme: "meme7.jpg",
+      memes: ["ОШИБКА: ТЫ ЖДЕШЬ РАЗРЕШЕНИЯ, А ПОЕЗД УШЕЛ", "МИНУС: СТОИШЬ В ОЧЕРЕДИ ЗА ДОЗВОЛОМ"]
     },
     {
       q: "Что такое e-CMR?",
       a: ["Электронная накладная", "Электромобиль", "Новый мем"],
       correct: 0,
-      memes: ["ОШИБКА: ТЫ ЖИВЕШЬ В КАМЕННОМ ВЕКЕ", "МИНУС РЕПУТАЦИЯ: БУМАЖКИ, БУМАЖКИ, БУМАЖКИ..."]
+      meme: "meme8.jpg",
+      memes: ["ОШИБКА: ТЫ ЖИВЕШЬ В КАМЕННОМ ВЕКЕ", "МИНУС: БУМАЖКИ, БУМАЖКИ, БУМАЖКИ..."]
     },
     {
       q: "Кто выдает книжки МДП в России?",
       a: ["АСМАП", "Почта России", "Любой водитель на заправке"],
       correct: 0,
-      memes: ["ОШИБКА: ТЫ КУПИЛ ПОДДЕЛКУ В ПЕРЕХОДЕ", "МИНУС РЕПУТАЦИЯ: ТВОЯ КНИЖКА НЕ ДЕЙСТВИТЕЛЬНА"]
+      meme: "meme9.jpg",
+      memes: ["ОШИБКА: ТЫ КУПИЛ ПОДДЕЛКУ В ПЕРЕХОДЕ", "МИНУС: ТВОЯ КНИЖКА НЕ ДЕЙСТВИТЕЛЬНА"]
     },
     {
-      q: "Что регулирует Таможенный кодекс ЕАЭС?",
-      a: ["Таможенные процедуры", "Правила дорожного движения", "Скорость интернета в фуре"],
+      q: "Водитель орет: 'Убери телефон!'. Что ты сделал не так?",
+      a: ["Снимал его на видео без спроса", "Неправильно припарковался", "Не заправил фуру"],
       correct: 0,
-      memes: ["ОШИБКА: ТЫ НЕ ПРОШЕЛ ТАМОЖНЮ", "МИНУС РЕПУТАЦИЯ: ТВОЙ ГРУЗ АРЕСТОВАН"]
+      meme: "meme10.jpg",
+      memes: ["ОШИБКА: ТЫ СТАЛ ЗВЕЗДОЙ ТИКТОКА", "МИНУС: ВИДЕО НАБРАЛО 100К ПРОСМОТРОВ"]
     }
   ];
 
   function startQuiz() {
-    sfxClick();
-    vibrate('medium');
+    sfxClick(); vibrate('medium');
     state.quizIndex = 0;
-    state.reputation = 0;
+    state.rep = 0;
+    state.statusStage = 0;
     goToScreen('screen-quiz');
     renderQuiz();
+  }
+
+  function updateStatusUI() {
+    state.statusStage = Math.floor(state.rep / 3);
+    if (state.statusStage > 4) state.statusStage = 4;
+    
+    let currentStatus = statusNames[state.statusStage];
+    
+    // Если выбрали девочку, меняем финальный статус
+    if (state.gender === 'girl' && state.statusStage === 4) {
+       currentStatus = "ДОЧЬ ПАПЫ ДИМЫ";
+    }
+
+    document.getElementById('status-title').innerText = currentStatus;
+    
+    if (state.statusStage < 4) {
+      let nextLevelRep = (state.statusStage + 1) * 3;
+      let left = nextLevelRep - state.rep;
+      document.getElementById('status-sub').innerText = `До повышения осталось правильных ответов: ${left}`;
+    } else {
+      document.getElementById('status-sub').innerText = `Максимальный уровень достигнут!`;
+    }
   }
 
   function renderQuiz() {
     const q = quizData[state.quizIndex];
     document.getElementById('quiz-progress').innerText = `ВОПРОС ${state.quizIndex + 1}/${quizData.length}`;
-    document.getElementById('quiz-rep').innerText = `РЕПУТАЦИЯ: ${state.reputation > 0 ? '+' : ''}${state.reputation}`;
+    updateStatusUI();
+    
+    // Работа с картинкой
+    const img = document.getElementById('meme-img');
+    const placeholder = document.getElementById('meme-placeholder');
+    
+    img.src = q.meme;
+    img.style.display = 'block';
+    placeholder.style.display = 'none';
+    
+    // Если картинка не загрузилась (нет файла), показываем заглушку
+    img.onerror = () => {
+      img.style.display = 'none';
+      placeholder.style.display = 'block';
+      placeholder.innerText = "[МЕМ НЕ ЗАГРУЖЕН]";
+    };
+
     document.getElementById('quiz-question').innerText = q.q;
     
     const answersContainer = document.getElementById('quiz-answers');
@@ -643,30 +733,28 @@
   }
 
   function handleAnswer(index, btn) {
-    if (btn.classList.contains('correct') || btn.classList.contains('wrong')) return; // Защита от двойного клика
+    if (btn.classList.contains('correct') || btn.classList.contains('wrong')) return;
     
     const q = quizData[state.quizIndex];
     const allBtns = document.querySelectorAll('.answer-btn');
     
     if (index === q.correct) {
       btn.classList.add('correct');
-      state.reputation++;
+      state.rep++;
       sfxSuccess();
       vibrate('success');
     } else {
       btn.classList.add('wrong');
-      allBtns[q.correct].classList.add('correct'); // Показываем правильный
-      state.reputation--;
+      allBtns[q.correct].classList.add('correct');
       sfxError();
       vibrate('error');
       
-      // Показываем мем
       const meme = q.memes[Math.floor(Math.random() * q.memes.length)];
       showModal('ПРОВАЛ', meme);
     }
 
-    // Блокируем кнопки
     allBtns.forEach(b => b.style.pointerEvents = 'none');
+    updateStatusUI();
 
     setTimeout(() => {
       state.quizIndex++;
@@ -679,12 +767,10 @@
   }
 
   // --- ЭКРАН 4: МИНИ-ИГРА ---
-  let minigameTimer;
   let minigameTimeout;
 
   function startMinigame() {
     goToScreen('screen-minigame');
-    state.minigamePassed = false;
     
     const bar = document.getElementById('timer-bar');
     const megaBtn = document.getElementById('mega-btn');
@@ -694,43 +780,36 @@
     megaBtn.style.display = 'grid';
     megaBtn.disabled = false;
 
-    // Даем фору 100мс чтобы transition применился
     setTimeout(() => {
       bar.style.transition = 'width 2s linear';
       bar.style.width = '0%';
     }, 50);
 
     minigameTimeout = setTimeout(() => {
-      // Не успел
-      if (!state.minigamePassed) {
-        megaBtn.style.display = 'none';
-        state.reputation--;
-        sfxError();
-        vibrate('error');
-        showModal('ТЫ СТАЛ ЗВЕЗДОЙ ТИКТОКА', 'Водитель выложил видео с тобой. Минус репутация. Штраф от тахографа.');
-        
-        setTimeout(() => {
-          closeModal();
-          showResult();
-        }, 2500);
-      }
+      megaBtn.style.display = 'none';
+      state.rep--; // Штраф
+      sfxError();
+      vibrate('error');
+      showModal('ТЫ СТАЛ ЗВЕЗДОЙ ТИКТОКА', 'Водитель выложил видео с тобой. Минус к статусу. Штраф от тахографа.');
+      
+      setTimeout(() => {
+        closeModal();
+        showResult();
+      }, 2500);
     }, 2000);
   }
 
   function handleMegaClick() {
-    if (state.minigamePassed) return;
-    state.minigamePassed = true;
     clearTimeout(minigameTimeout);
-    
     document.getElementById('mega-btn').style.display = 'none';
     document.getElementById('timer-bar').style.transition = 'none';
     document.getElementById('timer-bar').style.width = '100%';
     
-    state.reputation++;
+    state.rep++; // Бонус
     sfxSuccess();
     vibrate('heavy');
     
-    showModal('СПАСЕН!', 'Ты успел убрать телефон. Водитель тебя не снял. Бонус к репутации!');
+    showModal('СПАСЕН!', 'Ты успел убрать телефон. Водитель тебя не снял. Бонус к статусу!');
     
     setTimeout(() => {
       closeModal();
@@ -758,9 +837,8 @@
     const achievement = document.getElementById('result-achievement');
     const desc = document.getElementById('result-desc');
     
-    // Логика: максимум можно набрать 10 (квіз) + 1 (мінігра) = 11.
-    // Порог "високой" репутации: 8 и выше.
-    const isHighRep = state.reputation >= 8;
+    // Максимум: 10 (квіз) + 1 (мінігра) = 11.
+    const isHighRep = state.rep >= 8;
     
     if (isHighRep) {
       title.innerText = "ПОБЕДА";
@@ -769,7 +847,7 @@
       
       const role = state.gender === 'boy' ? 'СЫН' : 'ДОЧЬ';
       achievement.innerText = `ДОСТИЖЕНИЕ РАЗБЛОКИРОВАНО:\n${role} ПАПЫ ДИМЫ`;
-      desc.innerText = `Ты прошел путь от сперматозоида до гордости семьи. Таможня тебя уважает, тахограф тобой доволен. Забирай стипендию. (Репутация: ${state.reputation})`;
+      desc.innerText = `Ты прошел путь от сперматозоида до гордости семьи. Таможня тебя уважает, тахограф тобой доволен. Забирай стипендию.`;
       sfxSuccess();
       vibrate('success');
     } else {
@@ -778,15 +856,14 @@
       title.style.textShadow = "0 0 20px var(--danger)";
       
       achievement.innerText = "ДОСТИЖЕНИЕ РАЗБЛОКИРОВАНО:\nСПЕРМАТОЗОИД";
-      desc.innerText = `Ты не прошел испытание. Таможня тебя завернула, а тахограф плачет. Тебя ждет пересдача. (Репутация: ${state.reputation})`;
+      desc.innerText = `Ты не прошел испытание. Таможня тебя завернула, а тахограф плачет. Тебя ждет пересдача.`;
       sfxError();
       vibrate('error');
     }
   }
 
-  // Запуск при загрузке
+  // --- ЗАПУСК ---
   window.onload = () => {
-    // Первый клик для разблокировки AudioContext в браузерах
     document.body.addEventListener('click', initAudio, { once: true });
     runBootSequence();
   };
