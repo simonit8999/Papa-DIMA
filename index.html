@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0a0a0a">
-<title>ДАЛЬНОБОЙ: КВЕСТ v11</title>
+<title>ДАЛЬНОБОЙ: КВЕСТ v12</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   :root {
@@ -45,7 +45,6 @@
     z-index: 1;
   }
 
-  /* Фон для частиц/конфетти */
   #fx-canvas {
     position: fixed;
     inset: 0;
@@ -77,15 +76,18 @@
 
   /* ЭКРАН ВИКТОРИНЫ (Плотная компоновка) */
   #screen-quiz {
-    justify-content: space-between;
+    justify-content: flex-start;
     padding: 10px 12px;
   }
 
-  .quiz-top {
+  /* Обертка для всего контента викторины */
+  .quiz-content {
     width: 100%;
+    max-width: 500px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px; /* Плотный отступ между блоками */
+    margin-top: 5px;
   }
 
   .quiz-header {
@@ -96,6 +98,7 @@
     color: var(--neon);
     border-bottom: 1px solid var(--neon-dim);
     padding-bottom: 4px;
+    margin-bottom: 2px;
   }
 
   /* Компактная плашка статуса */
@@ -129,12 +132,11 @@
   /* КРИТИЧЕСКИ ВАЖНО: Картинки */
   .meme-container {
     width: 100%;
-    max-width: 500px;
     height: 160px;
     border-radius: 12px;
     overflow: hidden;
     background: #000;
-    margin: 10px 0;
+    margin: 4px 0;
     flex-shrink: 0;
   }
   .meme-container img {
@@ -146,13 +148,13 @@
   }
 
   .question-text {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: bold;
     color: var(--text);
     line-height: 1.3;
     text-align: center;
     width: 100%;
-    margin-bottom: 10px;
+    margin: 4px 0;
   }
 
   /* Контейнер для ответов */
@@ -161,8 +163,6 @@
     flex-direction: column;
     gap: 8px;
     width: 100%;
-    max-width: 500px;
-    margin-bottom: 10px;
   }
 
   /* Кнопки ответов */
@@ -337,7 +337,7 @@
   </div>
 
   <div id="screen-quiz" class="screen">
-    <div class="quiz-top">
+    <div class="quiz-content">
       <div class="quiz-header">
         <span id="quiz-progress">ВОПРОС 1/10</span>
         <span>РЕЖИМ: ТРАССА</span>
@@ -345,7 +345,7 @@
       
       <div class="status-container" id="status-container">
         <div class="status-title" id="status-title">СПЕРМАТОЗОИД ПАПЫ ДИМЫ</div>
-        <div class="status-sub" id="status-sub">До повышения осталось: 3</div>
+        <div class="status-sub" id="status-sub">Правильных ответов: 0 / 10</div>
       </div>
 
       <div class="meme-container" id="meme-container">
@@ -353,9 +353,9 @@
       </div>
 
       <div class="question-text" id="quiz-question">Загрузка вопроса...</div>
-    </div>
 
-    <div class="answers" id="quiz-answers"></div>
+      <div class="answers" id="quiz-answers"></div>
+    </div>
   </div>
 
   <div id="screen-result" class="screen">
@@ -438,24 +438,19 @@
     currentCorrectIndex: -1
   };
 
-  // Логика статусов:
-  // 0 - 4: Сперматозоид
-  // 4 - 6: Стажёр
-  // 6 - 8: Дальнобой
-  // 8 - 9: Приемный
-  // 10: Родной
+  // Градация статусов
   const statusNames = [
-    "СПЕРМАТОЗОИД ПАПЫ ДИМЫ",
-    "СПЕРМАТОЗОИД ПАПЫ ДИМЫ",
-    "СПЕРМАТОЗОИД ПАПЫ ДИМЫ",
-    "СПЕРМАТОЗОИД ПАПЫ ДИМЫ",
-    "СТАЖЁР НА ТАМОЖНЕ",
-    "СТАЖЁР НА ТАМОЖНЕ",
-    "ДАЛЬНОБОЙ-СЕРЕДНЯК",
-    "ДАЛЬНОБОЙ-СЕРЕДНЯК",
-    "ПРИЕМНЫЙ СЫН ПАПЫ ДИМЫ",
-    "ПРИЕМНЫЙ СЫН ПАПЫ ДИМЫ",
-    "СЫН ПАПЫ ДИМЫ"
+    "СПЕРМАТОЗОИД ПАПЫ ДИМЫ",       // 0
+    "СПЕРМАТОЗОИД ПАПЫ ДИМЫ",       // 1
+    "СПЕРМАТОЗОИД ПАПЫ ДИМЫ",       // 2
+    "СПЕРМАТОЗОИД ПАПЫ ДИМЫ",       // 3
+    "СТАЖЁР НА ТАМОЖНЕ",            // 4
+    "СТАЖЁР НА ТАМОЖНЕ",            // 5
+    "ДАЛЬНОБОЙ-СЕРЕДНЯК",           // 6
+    "ДАЛЬНОБОЙ-СЕРЕДНЯК",           // 7
+    "ПРИЕМНЫЙ СЫН ПАПЫ ДИМЫ",       // 8
+    "ПРИЕМНЫЙ СЫН ПАПЫ ДИМЫ",       // 9
+    "СЫН ПАПЫ ДИМЫ"                 // 10
   ];
 
   if (window.Telegram && window.Telegram.WebApp) window.Telegram.WebApp.ready();
@@ -528,13 +523,10 @@
   }
 
   function updateStatusUI() {
-    // Берем индекс репутации (от 0 до 10)
     let stage = state.rep;
     if (stage > 10) stage = 10;
     
     let currentStatus = statusNames[stage];
-    
-    // Если выбрали девочку, меняем финальные статусы
     if (state.gender === 'girl') {
       if (currentStatus === "ПРИЕМНЫЙ СЫН ПАПЫ ДИМЫ") currentStatus = "ПРИЕМНАЯ ДОЧЬ ПАПЫ ДИМЫ";
       if (currentStatus === "СЫН ПАПЫ ДИМЫ") currentStatus = "ДОЧЬ ПАПЫ ДИМЫ";
@@ -543,7 +535,6 @@
     const titleEl = document.getElementById('status-title');
     const containerEl = document.getElementById('status-container');
     
-    // Пульсация при смене статуса
     if (titleEl.innerText !== currentStatus) {
       titleEl.innerText = currentStatus;
       containerEl.classList.remove('pulse');
@@ -551,12 +542,7 @@
       containerEl.classList.add('pulse');
     }
 
-    // Текст прогресса
-    if (state.rep < 10) {
-      document.getElementById('status-sub').innerText = `Правильных ответов: ${state.rep} / 10`;
-    } else {
-      document.getElementById('status-sub').innerText = `Максимальный уровень!`;
-    }
+    document.getElementById('status-sub').innerText = `Правильных ответов: ${state.rep} / 10`;
   }
 
   function renderQuiz() {
@@ -653,7 +639,6 @@
     const failBox = document.getElementById('fail-box');
     
     if (state.rep === 10) {
-      // ИДЕАЛЬНЫЙ РЕЗУЛЬТАТ
       certBox.style.display = 'block';
       failBox.style.display = 'none';
       certBox.className = 'certificate gold';
@@ -667,12 +652,8 @@
       
       sfxSuccess();
       vibrate('success');
-      
-      // Запускаем конфетти
       startConfetti();
-
     } else {
-      // ПРОВАЛ
       certBox.style.display = 'none';
       failBox.style.display = 'block';
       
@@ -680,8 +661,6 @@
       
       sfxError();
       vibrate('error');
-      
-      // Запускаем дизлайки
       startDislikes();
     }
   }
@@ -702,7 +681,6 @@
   function startConfetti() {
     particles = [];
     const colors = ['#39ff14', '#ff6600', '#ffffff', '#ffd700'];
-    
     for (let i = 0; i < 100; i++) {
       particles.push({
         x: Math.random() * canvas.width,
@@ -759,7 +737,6 @@
         ctx.font = `${p.size}px Arial`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        // Оставляем только эмодзи 👎
         ctx.fillText('👎', 0, 0);
       }
       
