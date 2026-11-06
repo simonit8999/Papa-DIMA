@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0a0a0a">
-<title>ДАЛЬНОБОЙ: КВЕСТ v10</title>
+<title>ДАЛЬНОБОЙ: КВЕСТ v11</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   :root {
@@ -28,9 +28,9 @@
 
   html, body {
     height: 100%;
-    height: 100dvh; /* Идеально под мобилки */
+    height: 100dvh;
     width: 100%;
-    overflow: hidden; /* Запрет скролла окна */
+    overflow: hidden;
     background: var(--bg);
     color: var(--text);
     font-family: var(--font-mono);
@@ -42,6 +42,15 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+    z-index: 1;
+  }
+
+  /* Фон для частиц/конфетти */
+  #fx-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
   }
 
   .screen {
@@ -58,6 +67,7 @@
     transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s;
     overflow-y: auto;
     text-align: center;
+    z-index: 2;
   }
   .screen.active {
     opacity: 1;
@@ -67,7 +77,7 @@
 
   /* ЭКРАН ВИКТОРИНЫ (Плотная компоновка) */
   #screen-quiz {
-    justify-content: space-between; /* Распределяем контент */
+    justify-content: space-between;
     padding: 10px 12px;
   }
 
@@ -120,7 +130,7 @@
   .meme-container {
     width: 100%;
     max-width: 500px;
-    height: 160px; /* Фиксированная высота */
+    height: 160px;
     border-radius: 12px;
     overflow: hidden;
     background: #000;
@@ -130,7 +140,7 @@
   .meme-container img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Заполняет блок, не сплющиваясь */
+    object-fit: cover;
     object-position: center;
     display: block;
   }
@@ -149,7 +159,7 @@
   .answers {
     display: flex;
     flex-direction: column;
-    gap: 8px; /* Маленький отступ между кнопками */
+    gap: 8px;
     width: 100%;
     max-width: 500px;
     margin-bottom: 10px;
@@ -157,8 +167,8 @@
 
   /* Кнопки ответов */
   .answer-btn {
-    background: rgba(255, 255, 255, 0.05); /* Полупрозрачный фон */
-    border: 1px solid rgba(255, 255, 255, 0.1); /* Тонкая рамка */
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--text);
     padding: 12px 15px;
     font-family: var(--font-mono);
@@ -183,9 +193,10 @@
     color: var(--muted);
     width: 100%;
     text-align: center;
+    z-index: 3;
   }
 
-  /* Остальные экраны (Титул, Теория, Результаты) */
+  /* Остальные экраны */
   h1 { font-size: 24px; color: var(--neon); margin-bottom: 10px; }
   h2 { font-size: 20px; color: var(--white); margin-bottom: 10px; }
   h3 { font-size: 16px; color: var(--orange); margin-bottom: 10px; }
@@ -239,20 +250,27 @@
   .nav-controls .btn { margin: 0; padding: 10px; font-size: 14px; }
 
   #screen-result { justify-content: center; padding: 15px; }
+  
   .certificate {
     border: 3px double var(--orange); background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
     padding: 20px 15px; max-width: 500px; width: 100%; border-radius: 8px;
     position: relative; margin-bottom: 15px;
+    box-shadow: 0 0 30px rgba(255, 102, 0, 0.2);
   }
-  .certificate.gold { border-color: #ffd700; }
+  .certificate.gold { border-color: #ffd700; box-shadow: 0 0 40px rgba(255, 215, 0, 0.4); }
+  .certificate.silver { border-color: #c0c0c0; box-shadow: 0 0 30px rgba(192, 192, 192, 0.3); }
+  
   .certificate::before { content: "🏆"; font-size: 2rem; position: absolute; top: -18px; left: 50%; transform: translateX(-50%); background: var(--bg); padding: 0 10px; }
   .certificate h2 { color: var(--orange); font-size: 18px; margin-top: 10px; margin-bottom: 5px; }
   .certificate.gold h2 { color: #ffd700; }
+  .certificate.silver h2 { color: #c0c0c0; }
   .certificate .subtitle { font-size: 12px; color: var(--neon); margin-bottom: 15px; text-transform: uppercase; }
   .certificate p { font-size: 13px; line-height: 1.4; color: var(--text); margin-bottom: 10px; text-align: left; }
   .certificate .signature { margin-top: 15px; text-align: right; font-style: italic; color: var(--orange); font-size: 12px; }
+  .certificate.gold .signature { color: #ffd700; }
+  .certificate.silver .signature { color: #c0c0c0; }
   
-  .fail-box { border: 2px dashed var(--danger); background: rgba(255, 0, 51, 0.05); padding: 20px 15px; max-width: 500px; width: 100%; border-radius: 8px; margin-bottom: 15px; }
+  .fail-box { border: 2px dashed var(--danger); background: rgba(255, 0, 51, 0.05); padding: 20px 15px; max-width: 500px; width: 100%; border-radius: 8px; margin-bottom: 15px; z-index: 10; position: relative; }
   .fail-box h2 { color: var(--danger); font-size: 20px; margin-bottom: 10px; }
   .fail-box p { font-size: 13px; line-height: 1.4; color: #ddd; margin-bottom: 10px; }
   .fail-box .highlight { color: var(--danger); font-weight: bold; }
@@ -266,6 +284,8 @@
 </style>
 </head>
 <body>
+
+<canvas id="fx-canvas"></canvas>
 
 <div id="app">
   <div id="screen-boot" class="screen active">
@@ -325,7 +345,7 @@
       
       <div class="status-container" id="status-container">
         <div class="status-title" id="status-title">СПЕРМАТОЗОИД ПАПЫ ДИМЫ</div>
-        <div class="status-sub" id="status-sub">До повышения: 1 ответ</div>
+        <div class="status-sub" id="status-sub">До повышения осталось: 3</div>
       </div>
 
       <div class="meme-container" id="meme-container">
@@ -339,7 +359,8 @@
   </div>
 
   <div id="screen-result" class="screen">
-    <div class="certificate gold" id="certificate-box" style="display: none;">
+    <!-- Грамота -->
+    <div class="certificate" id="certificate-box" style="display: none;">
       <h2 id="cert-title">ТОРЖЕСТВЕННАЯ ГРАМОТА</h2>
       <div class="subtitle" id="cert-subtitle">Официальное усыновление / удочерение</div>
       <p>Настоящим документом подтверждается, что гражданин(ка) <strong id="cert-name">...</strong> успешно прошел(ла) все испытания дорогой, сдал(а) экзамен на знание таможенных конвенций и тахографа, и признан(а) достойным(ой) членом семьи.</p>
@@ -350,6 +371,7 @@
       </div>
     </div>
 
+    <!-- Провал -->
     <div class="fail-box" id="fail-box" style="display: none;">
       <h2>ПРОВАЛ</h2>
       <p>Вы набрали <strong id="fail-score">0</strong> баллов из 10 возможных.</p>
@@ -416,12 +438,23 @@
     currentCorrectIndex: -1
   };
 
-  // Прогресс бар: 0 -> 1 -> 2 -> 3 -> 4
+  // Логика статусов:
+  // 0 - 4: Сперматозоид
+  // 4 - 6: Стажёр
+  // 6 - 8: Дальнобой
+  // 8 - 9: Приемный
+  // 10: Родной
   const statusNames = [
     "СПЕРМАТОЗОИД ПАПЫ ДИМЫ",
-    "ГОЛОВАСТИК В КУЗОВЕ",
+    "СПЕРМАТОЗОИД ПАПЫ ДИМЫ",
+    "СПЕРМАТОЗОИД ПАПЫ ДИМЫ",
+    "СПЕРМАТОЗОИД ПАПЫ ДИМЫ",
+    "СТАЖЁР НА ТАМОЖНЕ",
     "СТАЖЁР НА ТАМОЖНЕ",
     "ДАЛЬНОБОЙ-СЕРЕДНЯК",
+    "ДАЛЬНОБОЙ-СЕРЕДНЯК",
+    "ПРИЕМНЫЙ СЫН ПАПЫ ДИМЫ",
+    "ПРИЕМНЫЙ СЫН ПАПЫ ДИМЫ",
     "СЫН ПАПЫ ДИМЫ"
   ];
 
@@ -495,12 +528,16 @@
   }
 
   function updateStatusUI() {
+    // Берем индекс репутации (от 0 до 10)
     let stage = state.rep;
-    if (stage > 4) stage = 4;
+    if (stage > 10) stage = 10;
     
     let currentStatus = statusNames[stage];
-    if (state.gender === 'girl' && stage === 4) {
-       currentStatus = "ДОЧЬ ПАПЫ ДИМЫ";
+    
+    // Если выбрали девочку, меняем финальные статусы
+    if (state.gender === 'girl') {
+      if (currentStatus === "ПРИЕМНЫЙ СЫН ПАПЫ ДИМЫ") currentStatus = "ПРИЕМНАЯ ДОЧЬ ПАПЫ ДИМЫ";
+      if (currentStatus === "СЫН ПАПЫ ДИМЫ") currentStatus = "ДОЧЬ ПАПЫ ДИМЫ";
     }
 
     const titleEl = document.getElementById('status-title');
@@ -514,10 +551,9 @@
       containerEl.classList.add('pulse');
     }
 
-    // Текст прогресса (до следующего уровня 1, 2, 3)
-    if (stage < 4) {
-      let left = 4 - state.rep;
-      document.getElementById('status-sub').innerText = `До повышения осталось: ${left}`;
+    // Текст прогресса
+    if (state.rep < 10) {
+      document.getElementById('status-sub').innerText = `Правильных ответов: ${state.rep} / 10`;
     } else {
       document.getElementById('status-sub').innerText = `Максимальный уровень!`;
     }
@@ -535,7 +571,6 @@
     img.src = q.meme;
     imgContainer.style.display = 'block';
     
-    // Если картинка битая, скрываем контейнер
     img.onerror = () => {
       imgContainer.style.display = 'none';
     };
@@ -574,7 +609,6 @@
       state.rep++;
       sfxSuccess();
       vibrate('success');
-      updateStatusUI(); 
     } else {
       btn.classList.add('wrong');
       allBtns[state.currentCorrectIndex].classList.add('correct');
@@ -587,6 +621,7 @@
     }
 
     allBtns.forEach(b => b.style.pointerEvents = 'none');
+    updateStatusUI(); 
 
     setTimeout(() => {
       state.quizIndex++;
@@ -617,10 +652,11 @@
     const certSubtitle = document.getElementById('cert-subtitle');
     const failBox = document.getElementById('fail-box');
     
-    // Если 10 из 10 - золотая грамота. Иначе - провал.
     if (state.rep === 10) {
+      // ИДЕАЛЬНЫЙ РЕЗУЛЬТАТ
       certBox.style.display = 'block';
       failBox.style.display = 'none';
+      certBox.className = 'certificate gold';
       
       certTitle.innerText = "ЗОЛОТАЯ ГРАМОТА";
       certSubtitle.innerText = "Официальное усыновление / удочерение";
@@ -631,7 +667,12 @@
       
       sfxSuccess();
       vibrate('success');
+      
+      // Запускаем конфетти
+      startConfetti();
+
     } else {
+      // ПРОВАЛ
       certBox.style.display = 'none';
       failBox.style.display = 'block';
       
@@ -639,6 +680,94 @@
       
       sfxError();
       vibrate('error');
+      
+      // Запускаем дизлайки
+      startDislikes();
+    }
+  }
+
+  // --- ЭФФЕКТЫ НА CANVAS ---
+  const canvas = document.getElementById('fx-canvas');
+  const ctx = canvas.getContext('2d');
+  let animationId;
+  let particles = [];
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  function startConfetti() {
+    particles = [];
+    const colors = ['#39ff14', '#ff6600', '#ffffff', '#ffd700'];
+    
+    for (let i = 0; i < 100; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        w: Math.random() * 8 + 4,
+        h: Math.random() * 8 + 4,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vy: Math.random() * 3 + 2,
+        vx: Math.random() * 2 - 1,
+        rot: Math.random() * Math.PI,
+        vrot: Math.random() * 0.1 - 0.05
+      });
+    }
+    animateParticles('confetti');
+  }
+
+  function startDislikes() {
+    particles = [];
+    for (let i = 0; i < 50; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        size: Math.random() * 20 + 20,
+        vy: Math.random() * 2 + 1,
+        vx: Math.random() * 1 - 0.5,
+        rot: Math.random() * Math.PI,
+        vrot: Math.random() * 0.05 - 0.025
+      });
+    }
+    animateParticles('dislikes');
+  }
+
+  function animateParticles(type) {
+    cancelAnimationFrame(animationId);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    let active = false;
+    
+    particles.forEach(p => {
+      p.y += p.vy;
+      p.x += p.vx;
+      p.rot += p.vrot;
+      
+      if (p.y < canvas.height) active = true;
+      
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      
+      if (type === 'confetti') {
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      } else if (type === 'dislikes') {
+        ctx.font = `${p.size}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        // Оставляем только эмодзи 👎
+        ctx.fillText('👎', 0, 0);
+      }
+      
+      ctx.restore();
+    });
+    
+    if (active) {
+      animationId = requestAnimationFrame(() => animateParticles(type));
     }
   }
 
